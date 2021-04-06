@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/Chest_menu"
+        android:icon="@drawable/biceps"
+        android:title="Chest"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Tricep_menu"
+        android:icon="@drawable/biceps"
+        android:title="Tricep"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Shoulders_menu"
+        android:icon="@drawable/biceps"
+        android:title="Shoulders"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Back_menu"
+        android:icon="@drawable/biceps"
+        android:title="Back"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Bicep_menu"
+        android:icon="@drawable/biceps"
+        android:title="Bicep"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Forearm_menu"
+        android:icon="@drawable/biceps"
+        android:title="Forearm"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Core_menu"
+        android:icon="@drawable/biceps"
+        android:title="Core"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Glutes_menu"
+        android:icon="@drawable/biceps"
+        android:title="Glutes"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Upper_Legs_menu"
+        android:icon="@drawable/biceps"
+        android:title="Upper-legs"
+        app:showAsAction="never" ></item>
+    <item
+        android:id="@+id/Cardio"
+        android:icon="@drawable/biceps"
+        android:title="Cardio"
+        app:showAsAction="never" ></item>
+
+</menu>

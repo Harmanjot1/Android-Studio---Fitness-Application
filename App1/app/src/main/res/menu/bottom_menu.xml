@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/dashboard_frag"
+        android:title="Dashboard"
+        android:icon="@drawable/progress"/>
+    <item
+        android:id="@+id/exercises_frag"
+        android:title="Exercises"
+        android:icon="@drawable/dumbell" />
+    <item
+        android:id="@+id/profile_frag"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile"/>
+</menu>
