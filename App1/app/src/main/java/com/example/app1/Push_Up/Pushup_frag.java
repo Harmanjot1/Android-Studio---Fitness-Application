@@ -53,8 +53,6 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
     // Edit texts
     TextView todays_pushups_txt, PB_pushups_txt;
 
-    Intent pushup, stopwatch;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

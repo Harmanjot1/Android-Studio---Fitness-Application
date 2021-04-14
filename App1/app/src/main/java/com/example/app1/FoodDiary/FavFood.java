@@ -1,7 +1,5 @@
 package com.example.app1.FoodDiary;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.app1.Database.DataBaseHelper;
+import com.example.app1.Activity;
 import com.example.app1.R;
 
 import java.util.ArrayList;
@@ -55,8 +54,8 @@ public class FavFood extends Fragment {
 
         favListView = (ListView) layout.findViewById(R.id.fav_food_listView);
 
-        food_list = ((FoodActivity) this.getActivity().getApplication()).getFood_list();
-        adapter = new FoodAdapter((Activity) getContext(), food_list);
+        food_list = ((Activity) this.getActivity().getApplication()).getFood_list();
+        adapter = new FoodAdapter((android.app.Activity) getContext(), food_list);
 
         dataBaseHelper = new DataBaseHelper(getContext());
 
@@ -71,6 +70,10 @@ public class FavFood extends Fragment {
                     public void onClick(View v) {
 
                         dataBaseHelper.addFood(clickedFood);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        DietPlan_frag dietPlan_frag = new DietPlan_frag();
+                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+
                     }
                 });
             }
@@ -93,7 +96,7 @@ public class FavFood extends Fragment {
         }
     }
     public void showAdapter() {
-        adapter = new FoodAdapter((Activity) getContext(), food_list);
+        adapter = new FoodAdapter((android.app.Activity) getContext(), food_list);
         favListView.setAdapter(adapter);
     }
 

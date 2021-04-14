@@ -1,7 +1,5 @@
 package com.example.app1.FoodDiary;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,12 +16,11 @@ import android.widget.TextView;
 
 import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
+import com.example.app1.Activity;
 import com.example.app1.R;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class DietPlan_frag extends Fragment {
 
@@ -80,7 +77,7 @@ public class DietPlan_frag extends Fragment {
 
         // --------------------------------------------------
 
-        food_list = ((FoodActivity) getActivity().getApplication()).getFood_list();
+        food_list = ((Activity) getActivity().getApplication()).getFood_list();
         adapter = new FoodAdapter(getActivity(), food_list);
 
         dataBaseHelper = new DataBaseHelper(getContext());

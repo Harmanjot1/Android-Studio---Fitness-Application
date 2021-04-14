@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.app1.Calories_Burned.Calories_Burned_Object;
 import com.example.app1.FoodDiary.Food;
 import com.example.app1.Push_Up.Push_Up;
 
@@ -44,10 +45,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String PUSHUP_DATE = "DATE_ADDED";
     // public static final String PUSHUP_PREFERENCE = "Preference";
 
+    // Column Names for CALORIES_TABLE
+    public static final String CALORIES_COLUMN_ID = "ID";
+    public static final String CALORIES_REASON = "Reason";
+    public static final String CALORIES_AMOUNT = "CALORIES_AMOUNT";
+    public static final String CALORIES_DATE = "DATE_ADDED";
+
     // Table Names
     public static final String FOOD_DIARY = "Food_Diary";
     public static final String FAV_FOOD_DIARY = "Fav_Food_Diary";
     public static final String PUSH_UP_TABLE = "Push_Up_Table";
+    public static final String CALORIES_BURNED_TABLE = "Calories_Burned_Table";
     public static final String STEPDETECTOR_TABLE = "Stepdetector_Table";
 
 
@@ -57,15 +65,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private String todaysDate;
 
     // Database Version
-    private static final int DATABASE_VERSON = 5;
+    private static final int DATABASE_VERSON = 7;
     // Database Name
     private static final String DATABASE_NAME = "Database";
 
     // Create Table Statements
     private static final String CREATE_FOOD_TABLE = "CREATE TABLE " + FOOD_DIARY + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + FOOD_NAME + " TEXT, " + FOOD_CALORIES + " INT, " + FOOD_PROTEIN + " INT, " + FOOD_PICTURE + " INT, " + DATE_ADDED + " TEXT)";
     private static final String CREATE_FAV_FOOD_TABLE = "CREATE TABLE " + FAV_FOOD_DIARY + " (" + FAV_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + FAV_FOOD_NAME + " TEXT, " + FAV_FOOD_CALORIES + " INT, " + FAV_FOOD_PROTEIN + " INT, " + FAV_FOOD_PICTURE + " INT, " + FAV_DATE_ADDED + " TEXT)";
+    private static final String CREATE_CALORIES_BURNED_TABLE = "CREATE TABLE " + CALORIES_BURNED_TABLE + " (" + CALORIES_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + CALORIES_REASON + " TEXT, " + CALORIES_AMOUNT + " INT, " + CALORIES_DATE + " TEXT)";
     private static final String CREATE_PUSHUP_TABLE = "CREATE TABLE " + PUSH_UP_TABLE + " (" + PUSHUP_TODAY + " INT , " + PUSHUP_PB + " INT, " + PUSHUP_DATE + " TEXT)";
-
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSON);
     }
@@ -78,6 +86,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_FAV_FOOD_TABLE);
         db.execSQL(CREATE_FOOD_TABLE);
         db.execSQL(CREATE_PUSHUP_TABLE);
+        db.execSQL(CREATE_CALORIES_BURNED_TABLE);
     }
 
     // This method is for when in the future the database is changed/upgraded. This will contain the
@@ -88,6 +97,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + FOOD_DIARY);
         db.execSQL("DROP TABLE IF EXISTS " + FAV_FOOD_DIARY);
         db.execSQL("DROP TABLE IF EXISTS " + PUSH_UP_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CALORIES_BURNED_TABLE);
+
         // Create tables again
         onCreate(db);
     }
@@ -104,6 +115,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(DATE_ADDED, todaysDate);
 
         long insert = db.insert(FOOD_DIARY, null, cv);
+        db.close();
+    }
+    public void addCaloriesBurned(Calories_Burned_Object object){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        getDate();
+
+        cv.put(CALORIES_REASON,object.getReason());
+        cv.put(CALORIES_AMOUNT,object.getAmount_burned());
+        cv.put(CALORIES_DATE,todaysDate);
+
+        long insert = db.insert(CALORIES_BURNED_TABLE, null, cv);
         db.close();
     }
 
@@ -147,10 +170,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 int Pushup_PB = cursor.getInt(1);
                 String Date = cursor.getString(2);
 
-
                 Push_Up push_up = new Push_Up(Pushup,Pushup_PB,Date);
                 returnList.add(push_up);
             }
+        cursor.close();
+        return returnList;
+    }
+
+    public List<Calories_Burned_Object> getCalories_Burned(){
+        List<Calories_Burned_Object> returnList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CALORIES_BURNED_TABLE, null);
+        getDate();
+        if (cursor.moveToFirst()){
+            do {
+                int Calorie_ID = cursor.getInt(0);
+                String reason = cursor.getString(1);
+                int amount = cursor.getInt(2);
+                String Date = cursor.getString(3);
+
+                Calories_Burned_Object object = new Calories_Burned_Object(Calorie_ID,reason,amount,Date);
+                returnList.add(object);
+            }while (cursor.moveToNext()); // keep repeating until list is complete
+        } else {
+            // Else do nothing
+        }
         cursor.close();
         db.close();
         return returnList;
@@ -232,6 +276,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(queryString, null);
         return cursor.moveToFirst();
     }
+
+    public boolean deleteCalories_Burned(Calories_Burned_Object object){
+        SQLiteDatabase db = this.getWritableDatabase();
+        // The reason we are calling WritableDatabase is because we are altering it
+        String queryString = "DELETE FROM " + CALORIES_BURNED_TABLE + " WHERE " + COLUMN_ID + " = " + object.getID();
+        Cursor cursor = db.rawQuery(queryString, null);
+        return cursor.moveToFirst();
+    }
     public boolean fav_deleteFood(Food food) {
         // if food is inside database then it will be deleted and return true hence its found
         // if food not in database then return false
@@ -257,5 +309,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void deleteAllFood() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + FOOD_DIARY);
+    }
+
+    public void deleteAllCalories_Burned(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + CALORIES_BURNED_TABLE);
     }
 }

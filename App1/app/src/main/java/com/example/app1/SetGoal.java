@@ -7,20 +7,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 
-import com.example.app1.Push_Up.Push_Up;
-import com.example.app1.Push_Up.Pushup_frag;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,10 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.Attributes;
 
 
 public class SetGoal extends Fragment {
@@ -64,8 +57,8 @@ public class SetGoal extends Fragment {
         Distance = (EditText) layout.findViewById(R.id.Running_edit_text);
         Push_ups = (EditText) layout.findViewById(R.id.push_ups_edit_text);
 
-        cancel = (Button) layout.findViewById(R.id.SetGoal_btnCancel);
-        save = (Button) layout.findViewById(R.id.SetGoal_btnSave);
+        cancel = (Button) layout.findViewById(R.id.Calories_Burned_add_btnCancel);
+        save = (Button) layout.findViewById(R.id.Calories_burned_add_btnSave);
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override

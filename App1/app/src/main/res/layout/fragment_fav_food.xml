@@ -18,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fav_food_scrollView2"
         android:layout_width="match_parent"
         android:layout_height="523dp"
         app:layout_constraintBottom_toTopOf="@+id/breakfast_btn_add"
