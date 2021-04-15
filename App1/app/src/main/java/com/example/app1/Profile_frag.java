@@ -124,7 +124,7 @@ public class Profile_frag extends Fragment {
     public void LoadData(){
         String UserId = rauth.getCurrentUser().getUid();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Info");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -132,7 +132,7 @@ public class Profile_frag extends Fragment {
                 String name = String.valueOf(snapshot.child("Name").getValue());
                 String age = String.valueOf(snapshot.child("Age").getValue());
                 String gender = String.valueOf(snapshot.child("Gender").getValue());
-                String currentweight = String.valueOf(snapshot.child("Gender").getValue());
+                String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
 
                 name_txt.setText("Name: "+name);
                 age_txt.setText("DOB: "+age);

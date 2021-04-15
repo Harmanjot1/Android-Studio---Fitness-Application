@@ -2,6 +2,7 @@ package com.example.app1.Calories_Burned;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +20,15 @@ import com.example.app1.Database.DataBaseHelper;
 
 import com.example.app1.Activity;
 import com.example.app1.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Calories_Burned extends Fragment {
 
@@ -34,7 +44,9 @@ public class Calories_Burned extends Fragment {
     DataBaseHelper dataBaseHelper = null;
 
     private boolean removeCalories = false;
-
+    //Firebase
+    FirebaseAuth rauth;
+    int removeBurnedCalories; // new altered calories
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +60,9 @@ public class Calories_Burned extends Fragment {
         container.removeAllViews();
         final View layout = inflater.inflate(R.layout.fragment_calories__burned, container, false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        // Get firebase instance
+        rauth = FirebaseAuth.getInstance();
 
         // Getting button listeners
         btn_Add = (Button) layout.findViewById(R.id.Calories_burned_Add);
@@ -133,7 +148,52 @@ public class Calories_Burned extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Calories_Burned_Object clickeditem = (Calories_Burned_Object) parent.getItemAtPosition(position);
 
+                    removeBurnedCalories = clickeditem.getAmount_burned();
+
                     dataBaseHelper.deleteCalories_Burned(clickeditem);
+
+                    String UserId = rauth.getCurrentUser().getUid();
+
+                    final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
+
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String getCalories_burned = String.valueOf(snapshot.child("Goal: Calories Burned").getValue());
+                            String getCalories_eaten = String.valueOf(snapshot.child("Goal: Calories Eaten").getValue());
+                            String getDistance = String.valueOf(snapshot.child("Goal: Running Distance").getValue());
+                            String getPushups = String.valueOf(snapshot.child("Goal: Push-up's").getValue());
+
+                            String challenge_getCalories_burned = String.valueOf(snapshot.child("Challenge: Calories Burned").getValue());
+                            String challenge_getCalories_eaten = String.valueOf(snapshot.child("Challenge: Calories Eaten").getValue());
+                            String challenge_getDistance = String.valueOf(snapshot.child("Challenge: Running Distance").getValue());
+                            String challenge_getPushups = String.valueOf(snapshot.child("Challenge: Push-up's").getValue());
+
+                            // Update pushups
+                            int challenge_removeFood = Integer.parseInt(challenge_getCalories_burned);
+                            int newTotal = challenge_removeFood - removeBurnedCalories;
+
+                            // Create HashMap
+                            Map targetMap = new HashMap<>();
+
+                            targetMap.put("Goal: Calories Burned",getCalories_burned);
+                            targetMap.put("Goal: Calories Eaten",getCalories_eaten);
+                            targetMap.put("Goal: Running Distance",getDistance);
+                            targetMap.put("Goal: Push-up's",getPushups);
+
+                            targetMap.put("Challenge: Calories Burned",newTotal);
+                            targetMap.put("Challenge: Calories Eaten",challenge_getCalories_eaten);
+                            targetMap.put("Challenge: Running Distance",challenge_getDistance);
+                            targetMap.put("Challenge: Push-up's",challenge_getPushups);
+
+                            databaseReference.setValue(targetMap);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
 
                     loadCalories();
                     showAdapter();

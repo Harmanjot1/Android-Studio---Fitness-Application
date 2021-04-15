@@ -73,51 +73,81 @@ public class SetGoal extends Fragment {
             @Override
             public void onClick(View v) {
                 String UserId = rauth.getCurrentUser().getUid();
-                DatabaseReference current_User_db = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Goals");
+                final DatabaseReference current_User_db = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
 
-                int calories_burned = 0;
-                int calories_eaten = 0;
-                float distance = 0;
-                int pushups = 0;
 
-                if (TextUtils.isEmpty(Calories_Burned.getText().toString())){
-                    Calories_Burned.setError("Set Goal for calories burned");
-                }else {
-                    calories_burned = Integer.parseInt(Calories_Burned.getText().toString());
-                }
-                if (TextUtils.isEmpty(Calories_Eaten.getText().toString())){
-                    Calories_Eaten.setError("Set Goal for calories burned");
-                }else {
-                    calories_eaten = Integer.parseInt(Calories_Eaten.getText().toString());
-                }
-                if (TextUtils.isEmpty(Distance.getText().toString())){
-                    Distance.setError("Set Goal for calories burned");
-                }else {
-                    distance = Float.valueOf(Distance.getText().toString());
-                }
-                if (TextUtils.isEmpty(Push_ups.getText().toString())){
-                    Push_ups.setError("Set Goal for calories burned");
-                }else {
-                    pushups = Integer.parseInt(Push_ups.getText().toString());
-                }
+                current_User_db.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String getCalories_burned = String.valueOf(snapshot.child("Goal: Calories Burned").getValue());
+                        String getCalories_eaten = String.valueOf(snapshot.child("Goal: Calories Eaten").getValue());
+                        String getDistance = String.valueOf(snapshot.child("Goal: Running Distance").getValue());
+                        String getPushups = String.valueOf(snapshot.child("Goal: Push-up's").getValue());
 
-                if (calories_burned !=0){
-                    if (calories_eaten != 0){
-                        if (distance != 0){
-                            if (pushups != 0)
-                            {
-                                Map newPost = new HashMap<>();
+                        String challenge_getCalories_burned = String.valueOf(snapshot.child("Challenge: Calories Burned").getValue());
+                        String challenge_getCalories_eaten = String.valueOf(snapshot.child("Challenge: Calories Eaten").getValue());
+                        String challenge_getDistance = String.valueOf(snapshot.child("Challenge: Running Distance").getValue());
+                        String challenge_getPushups = String.valueOf(snapshot.child("Challenge: Push-up's").getValue());
 
-                                newPost.put("Calories Burned",calories_burned);
-                                newPost.put("Calories Eaten",calories_eaten);
-                                newPost.put("Running Distance",distance);
-                                newPost.put("Push-up's", pushups);
 
-                                current_User_db.setValue(newPost);
+                        int calories_burned = 0;
+                        int calories_eaten = 0;
+                        float distance = 0;
+                        int pushups = 0;
+
+                        if (TextUtils.isEmpty(Calories_Burned.getText().toString())){
+                            Calories_Burned.setError("Set Goal for calories burned");
+                        }else {
+                            calories_burned = Integer.parseInt(Calories_Burned.getText().toString());
+                        }
+                        if (TextUtils.isEmpty(Calories_Eaten.getText().toString())){
+                            Calories_Eaten.setError("Set Goal for calories burned");
+                        }else {
+                            calories_eaten = Integer.parseInt(Calories_Eaten.getText().toString());
+                        }
+                        if (TextUtils.isEmpty(Distance.getText().toString())){
+                            Distance.setError("Set Goal for calories burned");
+                        }else {
+                            distance = Float.valueOf(Distance.getText().toString());
+                        }
+                        if (TextUtils.isEmpty(Push_ups.getText().toString())){
+                            Push_ups.setError("Set Goal for calories burned");
+                        }else {
+                            pushups = Integer.parseInt(Push_ups.getText().toString());
+                        }
+
+                        if (calories_burned !=0){
+                            if (calories_eaten != 0){
+                                if (distance != 0){
+                                    if (pushups != 0)
+                                    {
+                                        Map newPost = new HashMap<>();
+
+                                        newPost.put("Challenge: Calories Burned",challenge_getCalories_burned);
+                                        newPost.put("Challenge: Calories Eaten",challenge_getCalories_eaten);
+                                        newPost.put("Challenge: Running Distance",challenge_getDistance);
+                                        newPost.put("Challenge: Push-up's", challenge_getPushups);
+
+                                        newPost.put("Goal: Calories Burned",calories_burned);
+                                        newPost.put("Goal: Calories Eaten",calories_eaten);
+                                        newPost.put("Goal: Running Distance",distance);
+                                        newPost.put("Goal: Push-up's", pushups);
+
+                                        current_User_db.setValue(newPost);
+                                    }
+                                }
                             }
                         }
+
+
                     }
-                }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
             }
         });
 
@@ -129,7 +159,7 @@ public class SetGoal extends Fragment {
     public void LoadInfo(){
         String UserId = rauth.getCurrentUser().getUid();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Goals");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

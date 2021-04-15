@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -22,11 +23,19 @@ import android.widget.Toast;
 import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
 import com.example.app1.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NewFoodForm_frag extends Fragment {
 
@@ -41,6 +50,8 @@ public class NewFoodForm_frag extends Fragment {
     private SimpleDateFormat dateFormat;
     private String todaysDate;
 
+    //Firebase
+    FirebaseAuth rauth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,9 @@ public class NewFoodForm_frag extends Fragment {
         container.removeAllViews();
         final View layout = inflater.inflate(R.layout.fragment_new_food_form_frag, container, false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        // Get firebase instance
+        rauth = FirebaseAuth.getInstance();
 
         cancle = layout.findViewById(R.id.button_cancel);
         save = layout.findViewById(R.id.button_save_add);
@@ -113,6 +127,50 @@ public class NewFoodForm_frag extends Fragment {
                             Integer.parseInt(ET_Protein.getText().toString()),
                             diet_picture, todaysDate));
 
+                    // Firebase Update
+                    String UserId = rauth.getCurrentUser().getUid();
+
+                    final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
+
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String getCalories_burned = String.valueOf(snapshot.child("Goal: Calories Burned").getValue());
+                            String getCalories_eaten = String.valueOf(snapshot.child("Goal: Calories Eaten").getValue());
+                            String getDistance = String.valueOf(snapshot.child("Goal: Running Distance").getValue());
+                            String getPushups = String.valueOf(snapshot.child("Goal: Push-up's").getValue());
+
+                            String challenge_getCalories_burned = String.valueOf(snapshot.child("Challenge: Calories Burned").getValue());
+                            String challenge_getCalories_eaten = String.valueOf(snapshot.child("Challenge: Calories Eaten").getValue());
+                            String challenge_getDistance = String.valueOf(snapshot.child("Challenge: Running Distance").getValue());
+                            String challenge_getPushups = String.valueOf(snapshot.child("Challenge: Push-up's").getValue());
+
+                            // Update pushups
+                            int challenge_eaten = Integer.parseInt(challenge_getCalories_eaten);
+                            int newTotal = challenge_eaten + Integer.parseInt(ET_Calories.getText().toString());
+
+                            // Create HashMap
+                            Map targetMap = new HashMap<>();
+
+                            targetMap.put("Goal: Calories Burned",getCalories_burned);
+                            targetMap.put("Goal: Calories Eaten",getCalories_eaten);
+                            targetMap.put("Goal: Running Distance",getDistance);
+                            targetMap.put("Goal: Push-up's",getPushups);
+
+                            targetMap.put("Challenge: Calories Burned",challenge_getCalories_burned);
+                            targetMap.put("Challenge: Calories Eaten",newTotal);
+                            targetMap.put("Challenge: Running Distance",challenge_getDistance);
+                            targetMap.put("Challenge: Push-up's",challenge_getPushups);
+
+                            databaseReference.setValue(targetMap);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                     FragmentManager fragmentManager = getFragmentManager();
                     DietPlan_frag dietPlan_frag = new DietPlan_frag();
                     fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
@@ -127,6 +185,50 @@ public class NewFoodForm_frag extends Fragment {
                                 Integer.parseInt(String.valueOf(ET_Calories.getText())),
                                 Integer.parseInt(String.valueOf(ET_Protein.getText())),
                                 diet_picture, todaysDate));
+
+                        String UserId = rauth.getCurrentUser().getUid();
+
+                        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
+
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String getCalories_burned = String.valueOf(snapshot.child("Goal: Calories Burned").getValue());
+                                String getCalories_eaten = String.valueOf(snapshot.child("Goal: Calories Eaten").getValue());
+                                String getDistance = String.valueOf(snapshot.child("Goal: Running Distance").getValue());
+                                String getPushups = String.valueOf(snapshot.child("Goal: Push-up's").getValue());
+
+                                String challenge_getCalories_burned = String.valueOf(snapshot.child("Challenge: Calories Burned").getValue());
+                                String challenge_getCalories_eaten = String.valueOf(snapshot.child("Challenge: Calories Eaten").getValue());
+                                String challenge_getDistance = String.valueOf(snapshot.child("Challenge: Running Distance").getValue());
+                                String challenge_getPushups = String.valueOf(snapshot.child("Challenge: Push-up's").getValue());
+
+                                // Update pushups
+                                int challenge_eaten = Integer.parseInt(challenge_getCalories_eaten);
+                                int newTotal = challenge_eaten + Integer.parseInt(ET_Calories.getText().toString());
+
+                                // Create HashMap
+                                Map targetMap = new HashMap<>();
+
+                                targetMap.put("Goal: Calories Burned",getCalories_burned);
+                                targetMap.put("Goal: Calories Eaten",getCalories_eaten);
+                                targetMap.put("Goal: Running Distance",getDistance);
+                                targetMap.put("Goal: Push-up's",getPushups);
+
+                                targetMap.put("Challenge: Calories Burned",challenge_getCalories_burned);
+                                targetMap.put("Challenge: Calories Eaten",newTotal);
+                                targetMap.put("Challenge: Running Distance",challenge_getDistance);
+                                targetMap.put("Challenge: Push-up's",challenge_getPushups);
+
+                                databaseReference.setValue(targetMap);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
 
                         FragmentManager fragmentManager = getFragmentManager();
                         DietPlan_frag dietPlan_frag = new DietPlan_frag();

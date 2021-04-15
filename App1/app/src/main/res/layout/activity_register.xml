@@ -28,7 +28,7 @@
         android:layout_marginTop="28dp"
         android:background="@drawable/input_field"
         android:ems="10"
-        android:inputType="textPassword"
+
         android:hint="Password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
         android:layout_marginTop="28dp"
         android:background="@drawable/input_field"
         android:ems="10"
-        android:inputType="textPassword"
+
         android:hint="Re-Enter Password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"

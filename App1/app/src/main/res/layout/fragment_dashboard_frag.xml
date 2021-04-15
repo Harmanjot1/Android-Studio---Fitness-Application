@@ -155,10 +155,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/push_ups_btn" />
 
             <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintGuide_percent="0.5"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline30"
@@ -256,6 +257,32 @@
                 android:layout_marginBottom="1dp"
                 android:text="TextView"
                 app:layout_constraintBottom_toTopOf="@+id/pushups_progressBar"
+                app:layout_constraintEnd_toStartOf="@+id/guideline30" />
+
+            <ImageView
+                android:id="@+id/challenge_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/challenge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stopwatch_btn" />
+
+            <ProgressBar
+                android:id="@+id/challenge_progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_marginBottom="25dp"
+                app:layout_constraintBottom_toBottomOf="@+id/challenge_btn"
+                app:layout_constraintEnd_toStartOf="@+id/guideline30"
+                app:layout_constraintStart_toStartOf="@+id/guideline31" />
+
+            <TextView
+                android:id="@+id/challenge_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintBottom_toTopOf="@+id/challenge_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

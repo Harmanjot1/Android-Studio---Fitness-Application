@@ -87,7 +87,7 @@ public class UserInfo extends Fragment {
 
 
                 String UserId = rauth.getCurrentUser().getUid();
-                DatabaseReference current_User_db = FirebaseDatabase.getInstance().getReference().child("User").child(UserId);
+                DatabaseReference current_User_db = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Info");
 
                 String nameString = Name.getText().toString();
                 String AgeString = Age.getText().toString();
@@ -134,7 +134,7 @@ public class UserInfo extends Fragment {
     public void loadInfo(){
         String UserId = rauth.getCurrentUser().getUid();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Info");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -146,10 +146,10 @@ public class UserInfo extends Fragment {
                 String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
                 String targetweight = String.valueOf(snapshot.child("Target Weight").getValue());
 
-                Name.setText(name);
-                Age.setText(age);
-                CurrentWeight.setText(currentweight);
-                TargetWeight.setText(targetweight);
+                Name.setText(name+"");
+                Age.setText(age+"");
+                CurrentWeight.setText(currentweight+"");
+                TargetWeight.setText(targetweight+"");
             }
 
             @Override

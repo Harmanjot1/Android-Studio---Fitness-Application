@@ -21,6 +21,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
@@ -81,11 +86,11 @@ public class Register extends AppCompatActivity {
                 if (!email.matches(emailPattern)){
                     Toast.makeText(Register.this,"Email Pattern invalid",Toast.LENGTH_SHORT).show();
                 }
-                if (password.length() < 6) {
+                if (password.length() <= 6) {
                     rPassword.setError("Password must be longer than 6 characters");
                     return;
                 }
-                if (password != reEnterPassword){
+                if (password.equals(reEnterPassword)){
                     rReEnterPassword.setError("Passwords not matching!");
                     return;
                 }

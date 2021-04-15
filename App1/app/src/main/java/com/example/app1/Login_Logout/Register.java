@@ -21,6 +21,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
@@ -85,7 +90,7 @@ public class Register extends AppCompatActivity {
                     rPassword.setError("Password must be longer than 6 characters");
                     return;
                 }
-                if (password != reEnterPassword) {
+                if (!password.matches(reEnterPassword)) {
                     rReEnterPassword.setError("Passwords not matching!");
                     return;
                 }
@@ -98,6 +103,30 @@ public class Register extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(Register.this, "User registered", Toast.LENGTH_SHORT).show();
                             //startActivity(new Intent(getApplicationContext(),Login.class));
+                            String UserId = rauth.getCurrentUser().getUid();
+                            DatabaseReference targets = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
+
+
+                            int calories_burned = 0;
+                            int calories_eaten = 0;
+                            float distance = 0;
+                            int pushups = 0;
+
+                            Map targetMap = new HashMap<>();
+                            Map challengesmap = new HashMap<>();
+
+                            targetMap.put("Goal: Calories Burned",calories_burned);
+                            targetMap.put("Goal: Calories Eaten",calories_eaten);
+                            targetMap.put("Goal: Running Distance",distance);
+                            targetMap.put("Goal: Push-up's", pushups);
+
+                            targetMap.put("Challenge: Push-up's",pushups);
+                            targetMap.put("Challenge: Calories Eaten",calories_eaten);
+                            targetMap.put("Challenge: Running Distance",distance);
+                            targetMap.put("Challenge: Calories Burned",calories_burned);
+
+
+                            targets.setValue(targetMap);
                         } else {
                             Toast.makeText(Register.this, "Unable to register" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
