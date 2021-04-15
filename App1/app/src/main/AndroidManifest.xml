@@ -30,7 +30,7 @@
         android:theme="@style/Theme.AppCompat.Light">
         <activity android:name=".StepCounter.StepDetectorActivity" />
         <activity android:name=".StopWatch.StopWatch" />
-        <activity android:name=".CardView" />
+        <activity android:name=".Exercise.CardView" />
         <activity android:name=".FoodDiary.NewFoodForm"></activity>
         <activity android:name=".Login_Logout.Login">
             <intent-filter>

@@ -102,7 +102,7 @@ public class Register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(Register.this, "User registered", Toast.LENGTH_SHORT).show();
-                            //startActivity(new Intent(getApplicationContext(),Login.class));
+
                             String UserId = rauth.getCurrentUser().getUid();
                             DatabaseReference targets = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
 
@@ -127,6 +127,7 @@ public class Register extends AppCompatActivity {
 
 
                             targets.setValue(targetMap);
+                            startActivity(new Intent(getApplicationContext(),Login.class));
                         } else {
                             Toast.makeText(Register.this, "Unable to register" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 

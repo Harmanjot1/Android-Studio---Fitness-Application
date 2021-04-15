@@ -2,6 +2,7 @@ package com.example.app1;
 
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.example.app1.FoodDiary.DietPlan_frag;
 import com.example.app1.Login_Logout.Login;
@@ -35,6 +38,7 @@ public class Profile_frag extends Fragment {
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseAuth rauth;
+
 
     TextView name_txt,age_txt,currentweight_txt;
     ImageView UserImage;
@@ -58,6 +62,7 @@ public class Profile_frag extends Fragment {
         age_txt = (TextView) layout.findViewById(R.id.UserInfo_Age_txt);
         currentweight_txt = (TextView) layout.findViewById(R.id.UserInfo_currentWeight_txt);
         UserImage = (ImageView) layout.findViewById(R.id.Profile_UserImage);
+
 
         rauth = FirebaseAuth.getInstance();
 

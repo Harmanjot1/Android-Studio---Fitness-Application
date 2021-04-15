@@ -13,7 +13,7 @@
         tools:layout="@layout/fragment_dashboard_frag" />
     <fragment
         android:id="@+id/exercises_frag"
-        android:name="com.example.app1.Exercises_frag"
+        android:name="com.example.app1.Exercise.Exercises_frag"
         android:label="fragment_exercises_frag"
         tools:layout="@layout/fragment_exercises_frag" />
     <fragment

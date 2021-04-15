@@ -223,8 +223,7 @@ public class Dashboard_frag extends Fragment {
                 while (total_calories_Burned != target_calories_burned){
 
                     if (total_calories_Burned >= target_calories_burned){
-                        calories_burned_status = total_calories_Burned;
-
+                        total_calories_Burned = calories_burned_status;
                         while (target_calories_burned != calories_burned_status){
                             int speed = total_calories_Burned /50;
                             android.os.SystemClock.sleep(50);
@@ -237,10 +236,8 @@ public class Dashboard_frag extends Fragment {
                         if (calories_burned_status <= total_calories_Burned){
                             calories_burned_status +=speed;
                             System.out.println("Testingggggggggggggggggggggggggggggg");
-
                         }
                     }
-
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -275,7 +272,7 @@ public class Dashboard_frag extends Fragment {
 
                     if (totalcal >= target_calories_eaten){
                         calories_eaten_status = target_calories_eaten;
-                        while (target_calories_eaten !=calories_eaten_status ){
+                        while (totalcal !=calories_eaten_status ){
                             int speed = totalcal /50;
                             android.os.SystemClock.sleep(50);
                             calories_eaten_status+=speed;
@@ -472,6 +469,7 @@ public class Dashboard_frag extends Fragment {
 
                 pushups_txt.setText(todays_pushup+"/"+target_pushups);
                 calories_burned_txt.setText(total_calories_Burned+"/"+getCalories_burned);
+                System.out.println(total_calories_Burned);
                 calories_eaten_txt.setText(totalcal +"/"+getCalories_eaten);
                 running_txt.setText("/"+getDistance);
                 challenge_txt.setText(challenges_count+"/"+"12");
