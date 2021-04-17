@@ -1,6 +1,7 @@
 package com.example.app1.Push_Up;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,20 +10,24 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
+import com.example.app1.LoadingScreens.Main_loadingScreen;
 import com.example.app1.R;
 import com.example.app1.StopWatch.StopWatch;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +52,8 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
     private boolean state;
     private int counter = 0;
     private Button sensorMode, touchMode, backButton, saveButton,counterbtn;
+
+    ImageView help;
 
     // Database
     DataBaseHelper db;
@@ -87,6 +94,8 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
         backButton = (Button) layout.findViewById(R.id.backCounter_button);
         counterbtn = (Button) layout.findViewById(R.id.counter);
         saveButton = (Button) layout.findViewById(R.id.pushup_save_btn);
+
+        help = (ImageView) layout.findViewById(R.id.Pushup_help);
 
         todays_pushups_txt = (TextView) layout.findViewById(R.id.todays_pushups_text);
         PB_pushups_txt = (TextView) layout.findViewById(R.id.PB_pushups_text) ;
@@ -182,8 +191,23 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Dashboard_frag dashboard_frag = new Dashboard_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).commit();
+                Main_loadingScreen dashboard_frag = new Main_loadingScreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).addToBackStack(null).commit();
+            }
+        });
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Help");
+                alert.setMessage("Sensor Mode: Simply place phone under your chest or face and complete Push-up's.\n\nTouch Mode: If Sensor Mode is not available on your phone, please use touch mode.\nSimply place phone under your face and tap with nose on the way down.\n\nMust click 'Save' to add Push-up's to tally.");
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.create().show();
             }
         });
 

@@ -1,8 +1,10 @@
 package com.example.app1.FoodDiary;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
 import com.example.app1.Activity;
+import com.example.app1.LoadingScreens.Main_loadingScreen;
 import com.example.app1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +42,8 @@ public class DietPlan_frag extends Fragment {
     Button edit_cancel_btn, add_from_fav_btn;
     TextView calories_Set_Text;
     TextView protein_Set_Text;
+
+    ImageView help;
 
     //Firebase
     FirebaseAuth rauth;
@@ -80,6 +86,7 @@ public class DietPlan_frag extends Fragment {
         back_btn = layout.findViewById(R.id.food_diary_back_btn);
         add_from_fav_btn = layout.findViewById(R.id.add_from_fav_btn);
 
+        help = (ImageView) layout.findViewById(R.id.DietPlan_help);
 
         //
         breakfast_FoodList = layout.findViewById(R.id.breakfast_listView);
@@ -99,6 +106,21 @@ public class DietPlan_frag extends Fragment {
         loadFood();
 
         btnMethod();
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Help");
+                alert.setMessage("To add new food click 'Add'\nTo Remove food, click 'Edit' and simply tap on the food to remove.\n\nAlternatively add food from your favourites.");
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.create().show();
+            }
+        });
 
 
 
@@ -110,7 +132,7 @@ public class DietPlan_frag extends Fragment {
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
                 NewFoodForm_frag newFoodForm_frag = new NewFoodForm_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,newFoodForm_frag).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment,newFoodForm_frag).addToBackStack(null).commit();
             }
         });
 
@@ -138,7 +160,7 @@ public class DietPlan_frag extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 FavFood favFood = new FavFood();
-                fragmentManager.beginTransaction().replace(R.id.fragment,favFood).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment,favFood).addToBackStack(null).commit();
 
             }
         });
@@ -148,8 +170,8 @@ public class DietPlan_frag extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Dashboard_frag dashboard_frag = new Dashboard_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).commit();
+                Main_loadingScreen dashboard_frag = new Main_loadingScreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).addToBackStack(null).commit();
             }
         });
     }

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.example.app1.Calories_Burned.Calories_Burned_Object;
 import com.example.app1.FoodDiary.Food;
 import com.example.app1.Push_Up.Push_Up;
+import com.example.app1.StepCounter.Steps;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +52,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String CALORIES_AMOUNT = "CALORIES_AMOUNT";
     public static final String CALORIES_DATE = "DATE_ADDED";
 
+    // Columns names for Steps
+    public static final String STEPS_ID = "ID";
+    public static final String STEPS_AMOUNT = "AMOUNT";
+    public static final String STEPS_DATE = "DATE";
+
     // Table Names
     public static final String FOOD_DIARY = "Food_Diary";
     public static final String FAV_FOOD_DIARY = "Fav_Food_Diary";
@@ -74,6 +80,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_FAV_FOOD_TABLE = "CREATE TABLE " + FAV_FOOD_DIARY + " (" + FAV_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + FAV_FOOD_NAME + " TEXT, " + FAV_FOOD_CALORIES + " INT, " + FAV_FOOD_PROTEIN + " INT, " + FAV_FOOD_PICTURE + " INT, " + FAV_DATE_ADDED + " TEXT)";
     private static final String CREATE_CALORIES_BURNED_TABLE = "CREATE TABLE " + CALORIES_BURNED_TABLE + " (" + CALORIES_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + CALORIES_REASON + " TEXT, " + CALORIES_AMOUNT + " INT, " + CALORIES_DATE + " TEXT)";
     private static final String CREATE_PUSHUP_TABLE = "CREATE TABLE " + PUSH_UP_TABLE + " (" + PUSHUP_TODAY + " INT , " + PUSHUP_PB + " INT, " + PUSHUP_DATE + " TEXT)";
+    private static final String CREATE_SETPDETECTOR_TABLE = "CREATE TABLE " + STEPDETECTOR_TABLE + " (" + STEPS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT , " + STEPS_AMOUNT + " TEXT, " + STEPS_DATE + " TEXT)";
+
+
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSON);
     }
@@ -87,6 +96,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_FOOD_TABLE);
         db.execSQL(CREATE_PUSHUP_TABLE);
         db.execSQL(CREATE_CALORIES_BURNED_TABLE);
+        db.execSQL(CREATE_SETPDETECTOR_TABLE);
     }
 
     // This method is for when in the future the database is changed/upgraded. This will contain the
@@ -98,6 +108,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + FAV_FOOD_DIARY);
         db.execSQL("DROP TABLE IF EXISTS " + PUSH_UP_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + CALORIES_BURNED_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + STEPDETECTOR_TABLE);
 
         // Create tables again
         onCreate(db);
@@ -115,6 +126,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(DATE_ADDED, todaysDate);
 
         long insert = db.insert(FOOD_DIARY, null, cv);
+        db.close();
+    }
+
+    public void addSteps(Steps steps){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        getDate();
+
+        cv.put(STEPS_AMOUNT,steps.getAmount());
+        cv.put(STEPS_DATE, steps.getDate());
+
+        long insert = db.insert(STEPDETECTOR_TABLE, null, cv);
         db.close();
     }
     public void addCaloriesBurned(Calories_Burned_Object object){
@@ -175,6 +198,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }
         cursor.close();
         return returnList;
+    }
+
+    public List<Steps> getSteps(){
+        List<Steps> returnList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + STEPDETECTOR_TABLE, null);
+        getDate();
+
+        if (cursor.moveToFirst()){
+            do {
+                int ID = cursor.getInt(0);
+                int amount = cursor.getInt(1);
+                String Date = cursor.getString(2);
+
+                Steps steps = new Steps(ID,amount,Date);
+                returnList.add(steps);
+            }while (cursor.moveToNext());
+        }else {
+
+        }
+        cursor.close();
+        return returnList;
+
     }
 
     public List<Calories_Burned_Object> getCalories_Burned(){
@@ -309,6 +355,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void deleteAllFood() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + FOOD_DIARY);
+    }
+
+    public void deleteAllSteps(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + STEPDETECTOR_TABLE);
     }
 
     public void deleteAllCalories_Burned(){

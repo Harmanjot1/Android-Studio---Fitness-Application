@@ -7,13 +7,43 @@
     android:background="#08999999"
     tools:context=".Dashboard_frag">
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView_dashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#08999999"
+        android:fadingEdge="horizontal|vertical"
+        app:itemIconTint="#6E51E6"
+        app:itemTextColor="#6E51E6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15"
-        app:layout_constraintGuide_begin="110dp" />
+        app:layout_constraintGuide_percent="0.15184678" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -55,9 +85,12 @@
         app:layout_constraintVertical_bias="0.100000024" />
 
     <ProgressBar
-        style="?android:attr/progressBarStyle"
+        android:id="@+id/overall_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:progressDrawable="@drawable/circle"
+        android:rotation="270"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline5"
         app:layout_constraintStart_toStartOf="@+id/guideline4"
@@ -82,13 +115,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.4008208" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView_dashboard"
         app:layout_constraintEnd_toEndOf="@id/guideline7"
         app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="@+id/guideline12"
@@ -165,8 +198,8 @@
                 android:id="@+id/guideline30"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintGuide_percent="0.9"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
 
             <ProgressBar
                 android:id="@+id/Calories_burned_progressBar"
@@ -182,8 +215,8 @@
                 android:id="@+id/guideline31"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintGuide_percent="0.2"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.2" />
 
             <ProgressBar
                 android:id="@+id/calories_eaten_progressBar"
@@ -222,7 +255,7 @@
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginBottom="1dp"
-                android:text="TextView"
+                android:text="Loading ..."
                 app:layout_constraintBottom_toTopOf="@+id/Calories_burned_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
@@ -233,7 +266,7 @@
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginBottom="1dp"
-                android:text="TextView"
+                android:text="Loading ..."
                 app:layout_constraintBottom_toTopOf="@+id/calories_eaten_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
@@ -244,7 +277,7 @@
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginBottom="1dp"
-                android:text="TextView"
+                android:text="Loading ..."
                 app:layout_constraintBottom_toTopOf="@+id/running_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
@@ -255,7 +288,7 @@
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginBottom="1dp"
-                android:text="TextView"
+                android:text="Loading ..."
                 app:layout_constraintBottom_toTopOf="@+id/pushups_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
@@ -281,7 +314,7 @@
                 android:id="@+id/challenge_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="Loading ..."
                 app:layout_constraintBottom_toTopOf="@+id/challenge_progressBar"
                 app:layout_constraintEnd_toStartOf="@+id/guideline30" />
 
@@ -294,5 +327,29 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="1.0" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Overall Progress"
+        android:textColor="#6E51E6"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline23"
+        app:layout_constraintEnd_toStartOf="@+id/guideline24"
+        app:layout_constraintStart_toStartOf="@+id/guideline5"
+        app:layout_constraintTop_toTopOf="@+id/guideline22" />
+
+    <TextView
+        android:id="@+id/overall_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        android:textSize="20dp"
+        android:textColor="#6E51E6"
+        app:layout_constraintEnd_toStartOf="@+id/guideline24"
+        app:layout_constraintStart_toStartOf="@+id/guideline5"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

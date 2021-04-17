@@ -17,6 +17,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 
+import com.example.app1.Calories_Burned.Calories_Burned_Object;
+import com.example.app1.Database.DataBaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,13 +27,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.EventListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 
 
 public class UserInfo extends Fragment {
-    EditText Name,Age,CurrentWeight,TargetWeight;
+    EditText Name,Age,CurrentWeight,TargetWeight,height;
     Spinner gender;
 
     FirebaseAuth rauth;
@@ -39,6 +45,13 @@ public class UserInfo extends Fragment {
 
     Button Save,Cancel;
 
+    DataBaseHelper db;
+    Calories_Burned_Object calories_burned_object;
+
+    private List<Calories_Burned_Object> calories_burned_list = new ArrayList<>();
+
+    private SimpleDateFormat dateFormat;
+    private String todaysDate= "",previousDate = "";
 
     String[] Gender = {"Male","Female"};
 
@@ -58,11 +71,13 @@ public class UserInfo extends Fragment {
 
         rauth = FirebaseAuth.getInstance();
 
+        db = new DataBaseHelper(getContext());
 
         Name = (EditText) layout.findViewById(R.id.UserInfo_Name);
         Age = (EditText) layout.findViewById(R.id.UserInfo_Date);
         CurrentWeight = (EditText) layout.findViewById(R.id.UserInfo_CurrentWeight);
         TargetWeight = (EditText) layout.findViewById(R.id.UserInfo_TargetWeight);
+        height = (EditText) layout.findViewById(R.id.UserInfo_height);
 
         gender = (Spinner) layout.findViewById(R.id.UserInfo_Spinner);
 
@@ -94,6 +109,7 @@ public class UserInfo extends Fragment {
                 String GenderString = gender.getSelectedItem().toString();
                 String CurrentWeight_string = CurrentWeight.getText().toString();
                 String TargetWeight_String = TargetWeight.getText().toString();
+                String Height_String = height.getText().toString();
 
                 //SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -103,6 +119,16 @@ public class UserInfo extends Fragment {
                 if (AgeString.isEmpty()){
                     Age.setError("Please enter your age");
                 }
+                if (CurrentWeight_string.isEmpty()){
+                    CurrentWeight.setError("Please enter your current weight in kg");
+                }
+                if (TargetWeight_String.isEmpty()){
+                    TargetWeight.setError("Please enter your target weight in kg");
+                }
+                if (Height_String.isEmpty()){
+                    height.setError("Please enter your height in inches");
+                }
+
 
                 if (AgeString!= null && !AgeString.trim().isEmpty()){
                     if (nameString != null && !nameString.trim().isEmpty()){
@@ -113,10 +139,54 @@ public class UserInfo extends Fragment {
                         newPost.put("Gender",GenderString);
                         newPost.put("Current Weight",CurrentWeight_string);
                         newPost.put("Target Weight",TargetWeight_String);
+                        newPost.put(("Height"),Height_String);
 
                         current_User_db.setValue(newPost);
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        if (db.getCalories_Burned() != null){
+                            calories_burned_list.addAll(db.getCalories_Burned());
+
+
+                            for (int i = 0; i<calories_burned_list.size();i++){
+                                calories_burned_object = calories_burned_list.get(i);
+
+                                System.out.println(calories_burned_list+"kjadsfhgkjsabhfkjdsfbkjasdkjafghiukjabg");
+
+                                String reason  = calories_burned_object.getReason();
+                                System.out.println(reason);
+
+                                arrayList.add(reason);
+
+                            }
+
+                        }
+
+                        getDate();
+                        if (arrayList.contains("BMR")){
+
+                        }else {
+                            float Floatheight = Float.parseFloat(Height_String);
+                            int IntAge = Integer.parseInt(AgeString);
+                            int IntWeight = Integer.parseInt(CurrentWeight_string);
+
+                            double BMR = 0;
+
+                            if (GenderString.matches("Male")){
+                                BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
+                            }else if (GenderString.matches("Female")){
+                                BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                            }
+                            int BMRint = (int)BMR;
+                            db.addCaloriesBurned(new Calories_Burned_Object(-1,"BMR",BMRint,todaysDate));
+                        }
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        Profile_frag Profile_frag = new Profile_frag();
+                        fragmentManager.beginTransaction().replace(R.id.fragment,Profile_frag).addToBackStack(null).commit();
+
                     }
                 }
+
             }
         });
         Cancel.setOnClickListener(new View.OnClickListener() {
@@ -131,6 +201,17 @@ public class UserInfo extends Fragment {
 
         return layout;
     }
+
+    public void getDate() {
+        Calendar calendar;
+
+        calendar = Calendar.getInstance();
+
+        dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        todaysDate = dateFormat.format(calendar.getTime());
+
+    }
+
     public void loadInfo(){
         String UserId = rauth.getCurrentUser().getUid();
 
@@ -145,11 +226,33 @@ public class UserInfo extends Fragment {
                 String gender = String.valueOf(snapshot.child("Gender").getValue());
                 String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
                 String targetweight = String.valueOf(snapshot.child("Target Weight").getValue());
+                String getheight = String.valueOf(snapshot.child("Height").getValue());
 
-                Name.setText(name+"");
-                Age.setText(age+"");
-                CurrentWeight.setText(currentweight+"");
-                TargetWeight.setText(targetweight+"");
+                if (name.matches("null")){
+                    Name.setHint("Name");
+                }else {
+                    Name.setHint(name+"");
+                }
+                if (age.matches("null")){
+                    Age.setHint("Age");
+                }else {
+                    Age.setHint(age+"");
+                }
+                if (currentweight.matches("null")){
+                    CurrentWeight.setHint("Current weight");
+                }else {
+                    CurrentWeight.setHint(currentweight+"");
+                }
+                if (targetweight.matches("null")){
+                    TargetWeight.setHint("Target Weight");
+                }else {
+                    TargetWeight.setHint(targetweight+"");
+                }
+                if (getheight.matches("null")){
+                    height.setHint("Height (inches)");
+                }else {
+                    height.setHint(getheight);
+                }
             }
 
             @Override

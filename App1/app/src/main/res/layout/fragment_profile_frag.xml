@@ -8,6 +8,18 @@
     tools:context=".Profile_frag">
 
     <!-- TODO: Update blank fragment layout -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#08999999"
+        android:fadingEdge="horizontal|vertical"
+        app:itemIconTint="#6E51E6"
+        app:itemTextColor="#6E51E6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
 
     <Button
         android:id="@+id/buttonLogout"

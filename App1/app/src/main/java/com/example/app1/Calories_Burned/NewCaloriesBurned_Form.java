@@ -1,17 +1,21 @@
 package com.example.app1.Calories_Burned;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +38,7 @@ public class NewCaloriesBurned_Form extends Fragment {
     Button cancel,save;
     EditText reason, amount;
 
+    ImageView help;
     //Database
     DataBaseHelper db;
     //Firebase
@@ -65,6 +70,7 @@ public class NewCaloriesBurned_Form extends Fragment {
 
         save = (Button) layout.findViewById(R.id.Calories_burned_add_btnSave);
         cancel = (Button) layout.findViewById(R.id.Calories_Burned_add_btnCancel);
+        help = (ImageView) layout.findViewById(R.id.Calories_Burned_Form_help);
 
         db = new DataBaseHelper(getContext());
 
@@ -142,6 +148,21 @@ public class NewCaloriesBurned_Form extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 Calories_Burned newCaloriesBurned = new Calories_Burned();
                 fragmentManager.beginTransaction().replace(R.id.fragment,newCaloriesBurned).addToBackStack(null).commit();
+            }
+        });
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Help");
+                alert.setMessage("Please enter reason for calories burned in 'Activity' and number of calories burned in 'Calories Burned'");
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.create().show();
             }
         });
 

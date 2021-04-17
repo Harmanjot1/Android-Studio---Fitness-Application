@@ -132,7 +132,7 @@ public class FavFood extends Fragment {
                         });
                         FragmentManager fragmentManager = getFragmentManager();
                         DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
 
                     }
                 });
@@ -176,7 +176,7 @@ public class FavFood extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
 
             }
         });

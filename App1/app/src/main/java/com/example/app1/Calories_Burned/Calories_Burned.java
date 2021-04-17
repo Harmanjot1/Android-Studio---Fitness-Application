@@ -1,8 +1,11 @@
 package com.example.app1.Calories_Burned;
 
+import android.content.DialogInterface;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,13 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
 
 import com.example.app1.Activity;
+import com.example.app1.LoadingScreens.Main_loadingScreen;
 import com.example.app1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +41,7 @@ public class Calories_Burned extends Fragment {
     ListView Calories_Burned_ListView;
 
     Button btn_Add, btn_back,btn_edit,btn_done;
+    ImageView help;
 
     Calories_Burned_Adapter adapter;
     Calories_Burned_List calories_burned_list;
@@ -47,6 +54,13 @@ public class Calories_Burned extends Fragment {
     //Firebase
     FirebaseAuth rauth;
     int removeBurnedCalories; // new altered calories
+
+    private static final int LONG_DELAY = 5000; // 3.5 seconds
+    private static final int SHORT_DELAY = 2000; // 2 seconds
+
+    private Toast mToastToShow;
+
+    float height;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,9 +80,11 @@ public class Calories_Burned extends Fragment {
 
         // Getting button listeners
         btn_Add = (Button) layout.findViewById(R.id.Calories_burned_Add);
-        btn_back = (Button) layout.findViewById(R.id.Calories_Burned_btnBack);
+        btn_back = (Button) layout.findViewById(R.id.challenge_btnBack);
         btn_edit = (Button) layout.findViewById(R.id.calories_burned_editbtn);
         btn_done = (Button) layout.findViewById(R.id.calories_burned_donebtn);
+        // Help ImageView
+        help = (ImageView) layout.findViewById(R.id.CaloriesBurned_help);
 
         totalBurned = (TextView) layout.findViewById(R.id.calories_burned_totalcount_Text);
         header = (TextView) layout.findViewById(R.id.calories_burned_Header);
@@ -81,14 +97,31 @@ public class Calories_Burned extends Fragment {
 
         // getting database
         dataBaseHelper = new DataBaseHelper(getContext());
-
         loadCalories();
 
         btnMetod();
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Help");
+                alert.setMessage("Add calories burned by pressing add button.\n\nRemove added Activities by press edit button.\n\nBRM = base metabolic rate of calories burned calculated from your personal data.\n\nRe-evaluate your BMR or add BMR by entering your information in EditProfile on profile Page.");
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.create().show();
+            }
+        });
 
 
         return layout;
     }
+
+
+
     public void loadCalories(){
         if (dataBaseHelper.getCalories_Burned() != null){
             calories_burned_list.getMyCalories_Burned_List().clear();
@@ -113,7 +146,7 @@ public class Calories_Burned extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Dashboard_frag dashboard_frag = new Dashboard_frag();
+                Main_loadingScreen dashboard_frag = new Main_loadingScreen();
                 fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).addToBackStack(null).commit();
             }
         });
@@ -203,5 +236,6 @@ public class Calories_Burned extends Fragment {
             });
         }
     }
+
 
 }

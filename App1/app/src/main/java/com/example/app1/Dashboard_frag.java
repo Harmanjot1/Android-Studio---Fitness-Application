@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.Handler;
 import android.os.SystemClock;
@@ -26,10 +29,16 @@ import com.example.app1.Challenges.Challenge_frag;
 import com.example.app1.Database.DataBaseHelper;
 import com.example.app1.FoodDiary.DietPlan_frag;
 import com.example.app1.FoodDiary.Food;
+import com.example.app1.LoadingScreens.Calories_Burned_loadingscreen;
+import com.example.app1.LoadingScreens.Calories_EatenLoadingScreen;
+import com.example.app1.LoadingScreens.Challenge_loadingscreen;
+import com.example.app1.LoadingScreens.Pushup_loadingscreen;
 import com.example.app1.Push_Up.Push_Up;
 import com.example.app1.Push_Up.Pushup_frag;
 import com.example.app1.StepCounter.StepDetectorActivity;
+import com.example.app1.StepCounter.Steps;
 import com.example.app1.StopWatch.StopWatch;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,40 +60,51 @@ public class Dashboard_frag extends Fragment {
 
     TextView calories_burned_txt,calories_eaten_txt,running_txt,pushups_txt,challenge_txt;
 
+    TextView overallTxt;
 
     private ProgressBar calories_burned_progressBar, calories_eaten_progressBar, running_progressBar, pushups_porgressBar,challenge_progressBar;
+    private ProgressBar overall_progressBar;
     private int pushup_progress_process = 0;
     private int calories_progress_process = 0;
     private int steps_progress_process = 0;
     private int totalcal = 0;
     private static int challenges_count = 0;
+    private static int overall_count = 0;
 
     private static int target_calories_burned, target_calories_eaten, target_pushups;
     private static int completed_pushup,completed_eaten,completed_burned;
     private float target_running;
 
     private int calories_burned_status = 0,calories_eaten_status = 0,running_status = 0,pushups_status = 0,challenge_status = 0;
+    private int overall_status;
     String getCalories_burned,getCalories_eaten,getDistance,getPushups;
 
-    private Handler handler = new Handler();
-    private Handler handler2 = new Handler();
-
     private List<Push_Up> pushup_list = new ArrayList<>();
+    private List<Steps> steps_list = new ArrayList<>();
     private List<Food> food_list = new ArrayList<>();
     private List<Calories_Burned_Object> calories_burned_list = new ArrayList<>();
 
     Push_Up push_up;
     Food food;
+    Steps steps;
     Calories_Burned_Object calories_burned_object;
 
     FirebaseAuth rauth;
 
     // Database
     DataBaseHelper db;
-    private int todays_pushup,PB_pushup,total_calories_Burned;
+    private int todays_pushup,PB_pushup,total_calories_Burned,steps_counted;
     private String todaysDate= "",previousDate = "";
     private String caloriesBurnedPreviousDate = "",caloriesEatenPreviousDate = "";
     private SimpleDateFormat dateFormat;
+
+    // for Overall progress Bar
+    float overallProgress = 0;
+    int overallProgressInt = 0;
+    double burned_progress = 0;
+    double eaten_progress = 0;
+    double running_progress = 0;
+    double pushups_progress = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +127,7 @@ public class Dashboard_frag extends Fragment {
         calories_burned = (ImageView) layout.findViewById(R.id.caloried_burned_btn);
         challenge = (ImageView) layout.findViewById(R.id.challenge_btn);
 
+        overall_progressBar = (ProgressBar) layout.findViewById(R.id.overall_progressbar);
         calories_burned_progressBar = (ProgressBar) layout.findViewById(R.id.Calories_burned_progressBar);
         calories_eaten_progressBar = (ProgressBar) layout.findViewById(R.id.calories_eaten_progressBar);
         running_progressBar = (ProgressBar) layout.findViewById(R.id.running_progressBar);
@@ -118,6 +139,7 @@ public class Dashboard_frag extends Fragment {
         running_txt = (TextView) layout.findViewById(R.id.running_status_text);
         pushups_txt = (TextView) layout.findViewById(R.id.pushups_status_text);
         challenge_txt = (TextView) layout.findViewById(R.id.challenge_text_view);
+        overallTxt = (TextView) layout.findViewById(R.id.overall_txt);
 
 
         Drawable calories_burned_drawable =  new ProgressDrawable(0x99FF6700, 0x446B6869);
@@ -132,6 +154,7 @@ public class Dashboard_frag extends Fragment {
         pushups_porgressBar.setProgressDrawable(pushups_drawable);
         challenge_progressBar.setProgressDrawable(challenge_drawable);
 
+
         LoadInfo();
 
 
@@ -142,6 +165,10 @@ public class Dashboard_frag extends Fragment {
             pushup_list.addAll(db.getPushups());
             get_Date_Pushups();
         }
+        if (db.getSteps() != null){
+            steps_list.addAll(db.getSteps());
+
+        }
         if (db.getSavedFood() != null){
             food_list.addAll(db.getSavedFood());
             getCalories_EatenPreviousDate();
@@ -151,10 +178,15 @@ public class Dashboard_frag extends Fragment {
             getCalories_BurnedPreviousDate();
         }
 
+        BottomNavigationView bottomNavigationView = layout.findViewById(R.id.bottomNavigationView_dashboard);
+        NavController navController = Navigation.findNavController(getActivity(), R.id.fragment);
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
         resetNewDay();
         getTodays_Pushups();
         getTotalcal();
         getCaloriesBurned();
+        getSteps();
 
         getDate();
         // Resetting database if date is changed ---------------------------------------------------
@@ -163,22 +195,23 @@ public class Dashboard_frag extends Fragment {
         System.out.println("calories burned Date"+caloriesBurnedPreviousDate);
         System.out.println("calories eaten Date"+caloriesEatenPreviousDate);
 
+
         // Button click listeners ------------------------------------------------------------------
 
         push_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Pushup_frag pushup_frag = new Pushup_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,pushup_frag).commit();
+                Pushup_loadingscreen pushup_frag = new Pushup_loadingscreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,pushup_frag).addToBackStack(null).commit();
             }
         });
         calories_burned.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Calories_Burned calories_burned = new Calories_Burned();
-                fragmentManager.beginTransaction().replace(R.id.fragment,calories_burned).commit();
+                Calories_Burned_loadingscreen calories_burned = new Calories_Burned_loadingscreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,calories_burned).addToBackStack(null).commit();
             }
         });
         step_detector.setOnClickListener(new View.OnClickListener() {
@@ -199,16 +232,16 @@ public class Dashboard_frag extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                Calories_EatenLoadingScreen dietPlan_frag = new Calories_EatenLoadingScreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
             }
         });
         challenge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
-                Challenge_frag challenge_frag = new Challenge_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,challenge_frag).commit();
+                Challenge_loadingscreen challenge_frag = new Challenge_loadingscreen();
+                fragmentManager.beginTransaction().replace(R.id.fragment,challenge_frag).addToBackStack(null).commit();
             }
         });
 
@@ -235,15 +268,10 @@ public class Dashboard_frag extends Fragment {
 
                         if (calories_burned_status <= total_calories_Burned){
                             calories_burned_status +=speed;
-                            System.out.println("Testingggggggggggggggggggggggggggggg");
                         }
                     }
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            calories_burned_progressBar.setProgress(calories_burned_status);
-                        }
-                    });
+                    calories_burned_progressBar.setProgress(calories_burned_status);
+
                 }if (total_calories_Burned == target_calories_burned){
                     while (calories_burned_status !=target_calories_burned){
                         int speed = total_calories_Burned / 50;
@@ -251,12 +279,7 @@ public class Dashboard_frag extends Fragment {
                         if (calories_burned_status != total_calories_Burned){
                             calories_burned_status +=speed;
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                calories_burned_progressBar.setProgress(calories_burned_status);
-                            }
-                        });
+                        calories_burned_progressBar.setProgress(calories_burned_status);
                     }
                 }
 
@@ -284,12 +307,7 @@ public class Dashboard_frag extends Fragment {
                             calories_eaten_status+=speed;
                         }
                     }
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            calories_eaten_progressBar.setProgress(calories_eaten_status);
-                        }
-                    });
+                    calories_eaten_progressBar.setProgress(calories_eaten_status);
                 }if (totalcal == target_calories_eaten){
                     while (calories_eaten_status != target_calories_eaten){
                         int speed = totalcal /50;
@@ -297,12 +315,7 @@ public class Dashboard_frag extends Fragment {
                         if (totalcal != calories_eaten_status){
                             calories_eaten_status+=speed;
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                calories_eaten_progressBar.setProgress(calories_eaten_status);
-                            }
-                        });
+                        calories_eaten_progressBar.setProgress(calories_eaten_status);
                     }
 
                 }
@@ -319,12 +332,8 @@ public class Dashboard_frag extends Fragment {
                     if (challenges_count != challenge_status){
                         challenge_status+=1;
                     }
-                    handler2.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            challenge_progressBar.setProgress(challenge_status);
-                        }
-                    });
+                    challenge_progressBar.setProgress(challenge_status);
+
                 }
                 if (challenges_count == 12){
                     while (challenge_status != challenges_count){
@@ -332,16 +341,27 @@ public class Dashboard_frag extends Fragment {
                         if (challenges_count != challenge_status){
                             challenge_status+=1;
                         }
-                        handler2.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                challenge_progressBar.setProgress(challenge_status);
-                            }
-                        });
+                        challenge_progressBar.setProgress(challenge_status);
+
                     }
                 }
 
 
+            }
+        }).start();
+    }
+    public void Overall_thread(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (overall_status != 100){
+                    android.os.SystemClock.sleep(50);
+                    if (overall_status != overallProgressInt){
+                        overall_status+=1;
+                    }
+                    overall_progressBar.setProgress(overall_status);
+
+                }
             }
         }).start();
     }
@@ -353,12 +373,8 @@ public class Dashboard_frag extends Fragment {
                 while (running_status != target_running){
                     running_status++;
                     android.os.SystemClock.sleep(50);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            running_progressBar.setProgress(running_status);
-                        }
-                    });
+                    running_progressBar.setProgress(running_status);
+
                 }
 
             }
@@ -382,18 +398,13 @@ public class Dashboard_frag extends Fragment {
                         }
                     }
 
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushups_porgressBar.setProgress(pushups_status);
-                        }
-                    });
+                    pushups_porgressBar.setProgress(pushups_status);
+
                 }
 
             }
         }).start();
     }
-
 
     public void LoadInfo(){
         String UserId = rauth.getCurrentUser().getUid();
@@ -429,6 +440,7 @@ public class Dashboard_frag extends Fragment {
                 calories_eaten_progressBar.setMax(target_calories_eaten);
                 running_progressBar.setMax((int) target_running);
                 challenge_progressBar.setMax(12);
+                overall_progressBar.setMax(100);
 
 
                 challenges_count = 0;
@@ -441,6 +453,8 @@ public class Dashboard_frag extends Fragment {
                     challenges_count +=2;
                 }else if (completed_pushup >= 250){
                     challenges_count +=1;
+                }else {
+
                 }
                 if (completed_burned >= 50000){
                     challenges_count +=4;
@@ -450,6 +464,8 @@ public class Dashboard_frag extends Fragment {
                     challenges_count +=2;
                 }else if (completed_burned >= 5000){
                     challenges_count +=1;
+                }else {
+
                 }
                 if (completed_eaten >= 1000000){
                     challenges_count +=4;
@@ -459,6 +475,8 @@ public class Dashboard_frag extends Fragment {
                     challenges_count +=2;
                 }else if (completed_eaten >= 10000){
                     challenges_count +=1;
+                }else {
+
                 }
 
                 calories_burned_thread();
@@ -469,10 +487,39 @@ public class Dashboard_frag extends Fragment {
 
                 pushups_txt.setText(todays_pushup+"/"+target_pushups);
                 calories_burned_txt.setText(total_calories_Burned+"/"+getCalories_burned);
-                System.out.println(total_calories_Burned);
                 calories_eaten_txt.setText(totalcal +"/"+getCalories_eaten);
-                running_txt.setText("/"+getDistance);
+                running_txt.setText(steps_counted+"/"+getDistance);
                 challenge_txt.setText(challenges_count+"/"+"12");
+
+                float calories_burned_float = Float.parseFloat(String.valueOf(total_calories_Burned));
+                float target_calories_burned_float = Float.parseFloat(String.valueOf(target_calories_burned));
+
+                float calories_eaten_float = Float.parseFloat(String.valueOf(totalcal));
+                float target_eaten_burned_float = Float.parseFloat(String.valueOf(target_calories_eaten));
+
+                float running_float = Float.parseFloat(String.valueOf(steps_counted));
+                float target_running_float = Float.parseFloat(String.valueOf(target_running));
+
+                float pushup_float = Float.parseFloat(String.valueOf(todays_pushup));
+                float target_pushup_burned_float = Float.parseFloat(String.valueOf(target_pushups));
+
+                float burnedfloat = (calories_burned_float/target_calories_burned_float) *100;
+                float eatebfloat = (calories_eaten_float/target_eaten_burned_float) *100;
+                float runningfloat = (running_float/target_running_float) *100;
+                float pushupfloat = (pushup_float/target_pushup_burned_float) *100;
+
+                burned_progress = (burnedfloat *0.25);
+                eaten_progress = (eatebfloat *0.25);
+                running_progress = (runningfloat *0.25);
+                pushups_progress = (pushupfloat *0.25);
+
+                overallProgress = (float) (burned_progress+eaten_progress+running_progress+pushups_progress);
+                overallProgressInt = (int) overallProgress;
+
+                overallTxt.setText(""+overallProgressInt+"%");
+                Overall_thread();
+
+                System.out.println(overallProgressInt);
 
             }
 
@@ -555,6 +602,13 @@ public class Dashboard_frag extends Fragment {
         return PB_pushup;
     }
 
+    public int getSteps(){
+        for (int i = 0; i<steps_list.size();i++){
+            steps = steps_list.get(i);
+            steps_counted += steps.getAmount();
+        }
+        return steps_counted;
+    }
 
     public void resetNewDay() {
         get_Date_Pushups();

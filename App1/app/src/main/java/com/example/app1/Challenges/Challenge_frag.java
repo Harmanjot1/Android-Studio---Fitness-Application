@@ -48,6 +48,8 @@ public class Challenge_frag extends Fragment {
     private static int target_calories_burned = 0, target_calories_eaten = 0, target_pushups = 0;
     FirebaseAuth rauth;
 
+    Button backBtn;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,10 +98,20 @@ public class Challenge_frag extends Fragment {
         burned25000_completed = (ImageView) layout.findViewById(R.id.calories_burned25000_completed);
         burned50000_completed = (ImageView) layout.findViewById(R.id.calories_burned50000_completed);
 
+        backBtn = (Button) layout.findViewById(R.id.challenge_btnBack);
         // getting firebase instance
         rauth = FirebaseAuth.getInstance();
 
         LoadInfo();
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                Dashboard_frag dashboard_frag = new Dashboard_frag();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dashboard_frag).addToBackStack(null).commit();
+            }
+        });
         return layout;
     }
 

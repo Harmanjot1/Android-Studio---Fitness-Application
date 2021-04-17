@@ -103,7 +103,7 @@ public class NewFoodForm extends AppCompatActivity {
 
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                    fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                    fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
 
                 }else{
                     if (stringName.isEmpty() && ET_Calories!= null){
@@ -118,7 +118,7 @@ public class NewFoodForm extends AppCompatActivity {
 
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
                     }
 
                 }

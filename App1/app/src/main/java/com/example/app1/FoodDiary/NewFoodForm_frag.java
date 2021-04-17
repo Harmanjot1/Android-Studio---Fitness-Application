@@ -1,10 +1,12 @@
 package com.example.app1.FoodDiary;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,6 +48,7 @@ public class NewFoodForm_frag extends Fragment {
     Switch favFoodSwitch;
     int diet_picture;
     DataBaseHelper db;
+    ImageView help;
 
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
@@ -81,6 +85,8 @@ public class NewFoodForm_frag extends Fragment {
         dinner_btn = layout.findViewById(R.id.dinner_btn);
         snacks_btn = layout.findViewById(R.id.snacks_btn);
         favFoodSwitch = layout.findViewById(R.id.food_fav_switch);
+
+        help = (ImageView) layout.findViewById(R.id.AddFroomForm_help);
 
         breakfast_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +179,7 @@ public class NewFoodForm_frag extends Fragment {
 
                     FragmentManager fragmentManager = getFragmentManager();
                     DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                    fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                    fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
 
                 }else{
                     if (stringName.isEmpty() && ET_Calories!= null){
@@ -232,7 +238,7 @@ public class NewFoodForm_frag extends Fragment {
 
                         FragmentManager fragmentManager = getFragmentManager();
                         DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
                     }
 
                 }
@@ -245,8 +251,23 @@ public class NewFoodForm_frag extends Fragment {
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
                 DietPlan_frag dietPlan_frag = new DietPlan_frag();
-                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).addToBackStack(null).commit();
 
+            }
+        });
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Help");
+                alert.setMessage("Select food category from Breakfast, Lunch, Dinner or Snacks. \nAdd food name, calories and protein. \n\nTo add food to favourite for a faster process in the future, simply slide 'Save to Favourite' bar to the right.");
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.create().show();
             }
         });
 

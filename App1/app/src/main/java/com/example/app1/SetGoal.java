@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 
+import com.example.app1.Calories_Burned.Calories_Burned;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -148,6 +149,10 @@ public class SetGoal extends Fragment {
                     }
                 });
 
+                FragmentManager fragmentManager = getFragmentManager();
+                Profile_frag Profile_frag = new Profile_frag();
+                fragmentManager.beginTransaction().replace(R.id.fragment,Profile_frag).addToBackStack(null).commit();
+
             }
         });
 
@@ -164,15 +169,31 @@ public class SetGoal extends Fragment {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String caloried_burned = String.valueOf(snapshot.child("Calories Burned").getValue());
-                String calories_eaten = String.valueOf(snapshot.child("Calories Eaten").getValue());
-                String distance = String.valueOf(snapshot.child("Running Distance").getValue());
-                String pushups = String.valueOf(snapshot.child("Push-up's").getValue());
+                String caloried_burned = String.valueOf(snapshot.child("Goal: Calories Burned").getValue());
+                String calories_eaten = String.valueOf(snapshot.child("Goal: Calories Eaten").getValue());
+                String distance = String.valueOf(snapshot.child("Goal: Running Distance").getValue());
+                String pushups = String.valueOf(snapshot.child("Goal: Push-up's").getValue());
 
-                Calories_Burned.setHint(caloried_burned);
-                Calories_Eaten.setHint(calories_eaten);
-                Distance.setHint(distance);
-                Push_ups.setHint(pushups);
+                if (caloried_burned.matches("null")){
+                    Calories_Burned.setHint("Calories Burned Daily");
+                }else {
+                    Calories_Burned.setHint(caloried_burned);
+                }
+                if (calories_eaten.matches("null")){
+                    Calories_Eaten.setHint("Consumption Daily");
+                }else {
+                    Calories_Eaten.setHint(calories_eaten);
+                }
+                if (distance.matches("null")){
+                    Distance.setHint("Steps");
+                }else {
+                    Distance.setHint(distance);
+                }
+                if (pushups.matches("null")){
+                    Push_ups.setHint("Push-Up's Daily");
+                }else {
+                    Push_ups.setHint(pushups);
+                }
 
             }
 

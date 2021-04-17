@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
@@ -22,6 +25,7 @@ import android.widget.VideoView;
 
 import com.example.app1.FoodDiary.DietPlan_frag;
 import com.example.app1.Login_Logout.Login;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +46,8 @@ public class Profile_frag extends Fragment {
 
     TextView name_txt,age_txt,currentweight_txt;
     ImageView UserImage;
+
+    private float height;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,10 @@ public class Profile_frag extends Fragment {
         rauth = FirebaseAuth.getInstance();
 
         setupFireBaseListner();
+
+        BottomNavigationView bottomNavigationView = layout.findViewById(R.id.bottomNavigationView_profile);
+        NavController navController = Navigation.findNavController(getActivity(), R.id.fragment);
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
         Logout = (Button) layout.findViewById(R.id.buttonLogout);
         Logout.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +150,7 @@ public class Profile_frag extends Fragment {
                 String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
 
                 name_txt.setText("Name: "+name);
-                age_txt.setText("DOB: "+age);
+                age_txt.setText("Age: "+age);
                 currentweight_txt.setText("Current Weight :"+currentweight);
 
                 if (gender == "Male"){
@@ -157,4 +167,6 @@ public class Profile_frag extends Fragment {
             }
         });
     }
+
+
 }
