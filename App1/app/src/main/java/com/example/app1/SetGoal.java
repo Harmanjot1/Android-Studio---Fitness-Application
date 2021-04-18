@@ -102,17 +102,17 @@ public class SetGoal extends Fragment {
                             calories_burned = Integer.parseInt(Calories_Burned.getText().toString());
                         }
                         if (TextUtils.isEmpty(Calories_Eaten.getText().toString())){
-                            Calories_Eaten.setError("Set Goal for calories burned");
+                            Calories_Eaten.setError("Set Goal for calories eaten");
                         }else {
                             calories_eaten = Integer.parseInt(Calories_Eaten.getText().toString());
                         }
                         if (TextUtils.isEmpty(Distance.getText().toString())){
-                            Distance.setError("Set Goal for calories burned");
+                            Distance.setError("Set Goal for steps to take");
                         }else {
                             distance = Float.valueOf(Distance.getText().toString());
                         }
                         if (TextUtils.isEmpty(Push_ups.getText().toString())){
-                            Push_ups.setError("Set Goal for calories burned");
+                            Push_ups.setError("Set Goal for Push-up's");
                         }else {
                             pushups = Integer.parseInt(Push_ups.getText().toString());
                         }

@@ -44,7 +44,7 @@ public class Profile_frag extends Fragment {
     private FirebaseAuth rauth;
 
 
-    TextView name_txt,age_txt,currentweight_txt;
+    TextView name_txt,age_txt,currentweight_txt,bmr;
     ImageView UserImage;
 
     private float height;
@@ -68,6 +68,7 @@ public class Profile_frag extends Fragment {
         age_txt = (TextView) layout.findViewById(R.id.UserInfo_Age_txt);
         currentweight_txt = (TextView) layout.findViewById(R.id.UserInfo_currentWeight_txt);
         UserImage = (ImageView) layout.findViewById(R.id.Profile_UserImage);
+        bmr = (TextView) layout.findViewById(R.id.bmr);
 
 
         rauth = FirebaseAuth.getInstance();
@@ -148,6 +149,10 @@ public class Profile_frag extends Fragment {
                 String age = String.valueOf(snapshot.child("Age").getValue());
                 String gender = String.valueOf(snapshot.child("Gender").getValue());
                 String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
+                String targetweight = String.valueOf(snapshot.child("Target Weight").getValue());
+                String getheight = String.valueOf(snapshot.child("Height").getValue());
+                String getSleep = String.valueOf(snapshot.child("Sleep").getValue());
+                String getActive = String.valueOf(snapshot.child("Active").getValue());
 
                 name_txt.setText("Name: "+name);
                 age_txt.setText("Age: "+age);
@@ -158,6 +163,58 @@ public class Profile_frag extends Fragment {
                 }
                 if (gender == "Female"){
                     UserImage.setBackgroundResource(R.drawable.female_icon);
+                }
+                float Floatheight = Float.parseFloat(getheight);
+                int IntAge = Integer.parseInt(age);
+                int IntWeight = Integer.parseInt(currentweight);
+
+                double BMR = 0;
+
+                if (gender.matches("Male")){
+                    BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
+                }else if (gender.matches("Female")){
+                    BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                }
+                int BMRint = (int)BMR;
+                int currentWeight = Integer.parseInt(currentweight);
+                int targetWeight = Integer.parseInt(targetweight);
+                int weight_difference = 0;
+                if (currentWeight<targetWeight){
+                    weight_difference=targetWeight - currentWeight;
+                }else if(currentWeight>targetWeight){
+                    weight_difference = currentWeight-targetWeight;
+                }else if (currentWeight == targetWeight){
+                    weight_difference = 0;
+                }
+
+                double BMTdouble = (double) BMRint;
+
+                double activityFloat = 0;
+                if (getActive.equals("Sedentary")){
+                    activityFloat = 1.2;
+                }else if (getActive.equals("Lightly active")) {
+                    activityFloat = 1.375;
+                }else if (getActive.equals("Moderately active")) {
+                    activityFloat = 1.55;
+                }else if (getActive.equals("Very active")) {
+                    activityFloat = 1.725;
+                }else if (getActive.equals("Extra active")) {
+                    activityFloat = 1.9;
+                }
+
+                double totalBMR = BMTdouble*activityFloat;
+                double calories_to_eat = (weight_difference / 2) *250;
+
+                int total_to_eat = (int)totalBMR + (int)calories_to_eat;
+
+                if (currentWeight<targetWeight){
+                    bmr.setText("BMR: "+totalBMR+"\nTarget Weight: "+targetweight+"\n\nTo Achieve your target weight in 2 months, you must consume "+calories_to_eat+" more calories each day.\n\nThis brings your total calories to eat each day to:"+total_to_eat);
+                }else if(currentWeight>targetWeight){
+                    bmr.setText("BMR: "+totalBMR+"\nTarget Weight: "+targetweight+"\n\nTo Achieve your target weight in 2 months, you must consume "+calories_to_eat+" less calories each day.\n\nThis brings your total calories to eat each day to:"+total_to_eat);
+
+                }else if (currentWeight == targetWeight){
+                    bmr.setText("BMR: "+BMRint+"\nTarget Weight: "+targetweight+"\n\nTo maintain your in next 2 months, you must consume "+calories_to_eat+" more calories each day.\n\nThis brings your total calories to eat each day to:"+total_to_eat);
+
                 }
             }
 

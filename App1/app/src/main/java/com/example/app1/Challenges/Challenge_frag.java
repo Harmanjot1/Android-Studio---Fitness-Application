@@ -180,7 +180,7 @@ public class Challenge_frag extends Fragment {
                     push250_completed.setVisibility(View.VISIBLE);
                 }
 
-                if (caloriesEaten >= 50000){
+                if (caloriesEaten >= 100000){
                     eaten10000.setVisibility(View.INVISIBLE);
                     eaten10000_completed.setVisibility(View.VISIBLE);
 
@@ -193,7 +193,7 @@ public class Challenge_frag extends Fragment {
                     eaten100000.setVisibility(View.INVISIBLE);
                     eaten100000_completed.setVisibility(View.VISIBLE);
 
-                }else if (caloriesEaten >= 25000){
+                }else if (caloriesEaten >= 50000){
                     eaten10000.setVisibility(View.INVISIBLE);
                     eaten10000_completed.setVisibility(View.VISIBLE);
 
@@ -202,18 +202,18 @@ public class Challenge_frag extends Fragment {
 
                     eaten50000.setVisibility(View.INVISIBLE);
                     eaten50000_completed.setVisibility(View.VISIBLE);
-                }else if (caloriesEaten >= 10000){
+                }else if (caloriesEaten >= 20000){
                     eaten10000.setVisibility(View.INVISIBLE);
                     eaten10000_completed.setVisibility(View.VISIBLE);
 
                     eaten20000.setVisibility(View.INVISIBLE);
                     eaten20000_completed.setVisibility(View.VISIBLE);
-                }else if (caloriesEaten >= 5000){
+                }else if (caloriesEaten >= 10000){
                     eaten10000.setVisibility(View.INVISIBLE);
                     eaten10000_completed.setVisibility(View.VISIBLE);
                 }
 
-                if (caloriesBurned >= 100000){
+                if (caloriesBurned >= 50000){
                     burned5000.setVisibility(View.INVISIBLE);
                     burned5000_completed.setVisibility(View.VISIBLE);
 
@@ -225,7 +225,7 @@ public class Challenge_frag extends Fragment {
 
                     burned50000.setVisibility(View.INVISIBLE);
                     burned50000_completed.setVisibility(View.VISIBLE);
-                }else if (caloriesBurned >= 50000){
+                }else if (caloriesBurned >= 25000){
                     burned5000.setVisibility(View.INVISIBLE);
                     burned5000_completed.setVisibility(View.VISIBLE);
 
@@ -234,13 +234,13 @@ public class Challenge_frag extends Fragment {
 
                     burned25000.setVisibility(View.INVISIBLE);
                     burned25000_completed.setVisibility(View.VISIBLE);
-                }else if (caloriesBurned >= 20000){
+                }else if (caloriesBurned >= 10000){
                     burned5000.setVisibility(View.INVISIBLE);
                     burned5000_completed.setVisibility(View.VISIBLE);
 
                     burned10000.setVisibility(View.INVISIBLE);
                     burned10000_completed.setVisibility(View.VISIBLE);
-                }else if (caloriesBurned >= 10000){
+                }else if (caloriesBurned >= 5000){
                     burned5000.setVisibility(View.INVISIBLE);
                     burned5000_completed.setVisibility(View.VISIBLE);
                 }

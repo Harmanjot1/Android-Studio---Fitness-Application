@@ -182,7 +182,6 @@ public class Dashboard_frag extends Fragment {
         NavController navController = Navigation.findNavController(getActivity(), R.id.fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-        resetNewDay();
         getTodays_Pushups();
         getTotalcal();
         getCaloriesBurned();
@@ -195,6 +194,7 @@ public class Dashboard_frag extends Fragment {
         System.out.println("calories burned Date"+caloriesBurnedPreviousDate);
         System.out.println("calories eaten Date"+caloriesEatenPreviousDate);
 
+        resetNewDay();
 
         // Button click listeners ------------------------------------------------------------------
 
@@ -253,34 +253,26 @@ public class Dashboard_frag extends Fragment {
             @Override
             public void run() {
                 //calories_burned_txt.setText(target_calories_burned);
-                while (total_calories_Burned != target_calories_burned){
+                while (total_calories_Burned != target_calories_burned) {
 
-                    if (total_calories_Burned >= target_calories_burned){
-                        total_calories_Burned = calories_burned_status;
-                        while (target_calories_burned != calories_burned_status){
-                            int speed = total_calories_Burned /50;
-                            android.os.SystemClock.sleep(50);
-                            calories_burned_status +=speed;
-                        }
+                    if (total_calories_Burned >= target_calories_burned) {
+                        calories_burned_status = target_calories_burned;
                     }else {
                         int speed = total_calories_Burned /50;
                         android.os.SystemClock.sleep(50);
 
-                        if (calories_burned_status <= total_calories_Burned){
-                            calories_burned_status +=speed;
+                        if (total_calories_Burned != calories_burned_status){
+                            calories_burned_status+=speed;
+                            if (calories_burned_status>total_calories_Burned){
+                                calories_burned_status = total_calories_Burned;
+                                System.out.println(speed+"speed");
+                                System.out.println(total_calories_Burned);
+                                System.out.println(target_calories_burned);
+                                System.out.println(calories_burned_status);
+                            }
                         }
                     }
                     calories_burned_progressBar.setProgress(calories_burned_status);
-
-                }if (total_calories_Burned == target_calories_burned){
-                    while (calories_burned_status !=target_calories_burned){
-                        int speed = total_calories_Burned / 50;
-                        android.os.SystemClock.sleep(50);
-                        if (calories_burned_status != total_calories_Burned){
-                            calories_burned_status +=speed;
-                        }
-                        calories_burned_progressBar.setProgress(calories_burned_status);
-                    }
                 }
 
             }
@@ -291,33 +283,22 @@ public class Dashboard_frag extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (totalcal != target_calories_eaten){
+                while (totalcal != target_calories_eaten) {
 
-                    if (totalcal >= target_calories_eaten){
+                    if (totalcal >= target_calories_eaten) {
                         calories_eaten_status = target_calories_eaten;
-                        while (totalcal !=calories_eaten_status ){
-                            int speed = totalcal /50;
-                            android.os.SystemClock.sleep(50);
-                            calories_eaten_status+=speed;
-                        }
                     }else {
-                        int speed = totalcal /50;
+                        int speed = target_calories_eaten /50;
                         android.os.SystemClock.sleep(50);
+
                         if (totalcal != calories_eaten_status){
                             calories_eaten_status+=speed;
+                            if (calories_eaten_status>totalcal){
+                                calories_eaten_status = totalcal;
+                            }
                         }
                     }
                     calories_eaten_progressBar.setProgress(calories_eaten_status);
-                }if (totalcal == target_calories_eaten){
-                    while (calories_eaten_status != target_calories_eaten){
-                        int speed = totalcal /50;
-                        android.os.SystemClock.sleep(50);
-                        if (totalcal != calories_eaten_status){
-                            calories_eaten_status+=speed;
-                        }
-                        calories_eaten_progressBar.setProgress(calories_eaten_status);
-                    }
-
                 }
             }
         }).start();
@@ -370,11 +351,22 @@ public class Dashboard_frag extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (running_status != target_running){
-                    running_status++;
-                    android.os.SystemClock.sleep(50);
-                    running_progressBar.setProgress(running_status);
+                while (steps_counted != target_running) {
 
+                    if (steps_counted >= target_running) {
+                        running_status = (int) target_running;
+                    }else {
+                        float speed = target_running /50;
+                        android.os.SystemClock.sleep(50);
+
+                        if (steps_counted != running_status){
+                            running_status+=speed;
+                            if (running_status>totalcal){
+                                running_status = totalcal;
+                            }
+                        }
+                    }
+                    running_progressBar.setProgress(running_status);
                 }
 
             }
@@ -384,6 +376,7 @@ public class Dashboard_frag extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 while (todays_pushup != target_pushups){
                     if (todays_pushup <50){
                         android.os.SystemClock.sleep(50);
@@ -479,12 +472,6 @@ public class Dashboard_frag extends Fragment {
 
                 }
 
-                calories_burned_thread();
-                calories_eaten_thread();
-                running_thread();
-                challenge_thread();
-                pushup_thread();
-
                 pushups_txt.setText(todays_pushup+"/"+target_pushups);
                 calories_burned_txt.setText(total_calories_Burned+"/"+getCalories_burned);
                 calories_eaten_txt.setText(totalcal +"/"+getCalories_eaten);
@@ -512,14 +499,32 @@ public class Dashboard_frag extends Fragment {
                 eaten_progress = (eatebfloat *0.25);
                 running_progress = (runningfloat *0.25);
                 pushups_progress = (pushupfloat *0.25);
+                if (burned_progress>25){
+                    burned_progress = 25;
+                }
+                if (eaten_progress>25){
+                    eaten_progress = 25;
+                }
+                if (running_progress>25){
+                    running_progress = 25;
+                }
+                if (pushups_progress>25){
+                    pushups_progress = 25;
+                }
 
                 overallProgress = (float) (burned_progress+eaten_progress+running_progress+pushups_progress);
                 overallProgressInt = (int) overallProgress;
 
                 overallTxt.setText(""+overallProgressInt+"%");
-                Overall_thread();
 
-                System.out.println(overallProgressInt);
+                Overall_thread();
+                calories_burned_thread();
+                calories_eaten_thread();
+                running_thread();
+                challenge_thread();
+                pushup_thread();
+
+                System.out.println(burned_progress);
 
             }
 
@@ -635,22 +640,50 @@ public class Dashboard_frag extends Fragment {
 
         if (caloriesBurnedPreviousDate.equals(todaysDate) || caloriesBurnedPreviousDate.isEmpty()){
         }else {
-            db.deleteAllCalories_Burned();
-            burned = true;
-        }
-        if (burned == true || eaten == true || pushup == true){
-            reloadFragment();
+            String UserId = rauth.getCurrentUser().getUid();
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Info");
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String getheight = String.valueOf(snapshot.child("Height").getValue());
+                    String getSleep = String.valueOf(snapshot.child("Sleep").getValue());
+                    String age = String.valueOf(snapshot.child("Age").getValue());
+                    String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
+                    String gender = String.valueOf(snapshot.child("Gender").getValue());
+
+                    float Floatheight = Float.parseFloat(getheight);
+                    float FloatSleep = Float.parseFloat(getSleep);
+                    int IntAge = Integer.parseInt(age);
+                    int IntWeight = Integer.parseInt(currentweight);
+
+                    double BMR = 0;
+
+                    if (gender.matches("Male")){
+                        BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
+                    }else if (gender.matches("Female")){
+                        BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                    }
+                    int BMRint = (int)BMR;
+                    double Sleep = ((double)BMRint /24) * FloatSleep * 0.85;
+                    int SleepInt = (int)Sleep;
+
+                    db.deleteAllCalories_Burned();
+                    db.addCaloriesBurned(new Calories_Burned_Object(-1,"Sleep",SleepInt,todaysDate));
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
 
 
     }
 
-    public void reloadFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        Dashboard_frag dietPlan_frag = new Dashboard_frag();
-        fragmentManager.beginTransaction().replace(R.id.fragment,dietPlan_frag).commit();
-    }
 
 
 }

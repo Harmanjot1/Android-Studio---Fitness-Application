@@ -37,8 +37,8 @@ import java.util.jar.Attributes;
 
 
 public class UserInfo extends Fragment {
-    EditText Name,Age,CurrentWeight,TargetWeight,height;
-    Spinner gender;
+    EditText Name,Age,CurrentWeight,TargetWeight,height,sleep;
+    Spinner gender,activity;
 
     FirebaseAuth rauth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -54,6 +54,7 @@ public class UserInfo extends Fragment {
     private String todaysDate= "",previousDate = "";
 
     String[] Gender = {"Male","Female"};
+    String[] Activity = {"Sedentary","Light active","Moderately active","Very active","Extra active"};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,8 +79,10 @@ public class UserInfo extends Fragment {
         CurrentWeight = (EditText) layout.findViewById(R.id.UserInfo_CurrentWeight);
         TargetWeight = (EditText) layout.findViewById(R.id.UserInfo_TargetWeight);
         height = (EditText) layout.findViewById(R.id.UserInfo_height);
+        sleep = (EditText) layout.findViewById(R.id.UserInfo_sleep);
 
         gender = (Spinner) layout.findViewById(R.id.UserInfo_Spinner);
+        activity = (Spinner) layout.findViewById(R.id.spinner_activity);
 
         Save = (Button) layout.findViewById(R.id.UserInfo_btnSave);
         Cancel = (Button) layout.findViewById(R.id.UserInfo_btnCancel);
@@ -90,10 +93,20 @@ public class UserInfo extends Fragment {
                 android.R.layout.simple_spinner_item,
                 Gender);
 
+        ArrayAdapter ac
+                = new ArrayAdapter(
+                getContext(),
+                android.R.layout.simple_spinner_item,
+                Activity);
+
         ad.setDropDownViewResource(
                 android.R.layout
                         .simple_spinner_dropdown_item);
+        ac.setDropDownViewResource(
+                android.R.layout
+                        .simple_spinner_dropdown_item);
         gender.setAdapter(ad);
+        activity.setAdapter(ac);
         loadInfo();
 
         Save.setOnClickListener(new View.OnClickListener() {
@@ -107,9 +120,11 @@ public class UserInfo extends Fragment {
                 String nameString = Name.getText().toString();
                 String AgeString = Age.getText().toString();
                 String GenderString = gender.getSelectedItem().toString();
+                String activeString = activity.getSelectedItem().toString();
                 String CurrentWeight_string = CurrentWeight.getText().toString();
                 String TargetWeight_String = TargetWeight.getText().toString();
                 String Height_String = height.getText().toString();
+                String Sleep_String = sleep.getText().toString();
 
                 //SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -128,6 +143,9 @@ public class UserInfo extends Fragment {
                 if (Height_String.isEmpty()){
                     height.setError("Please enter your height in inches");
                 }
+                if (Sleep_String.isEmpty()){
+                    sleep.setError("Please enter how many hours you sleep on average");
+                }
 
 
                 if (AgeString!= null && !AgeString.trim().isEmpty()){
@@ -137,9 +155,11 @@ public class UserInfo extends Fragment {
                         newPost.put("Name",nameString);
                         newPost.put("Age",AgeString);
                         newPost.put("Gender",GenderString);
+                        newPost.put("Active",activeString);
                         newPost.put("Current Weight",CurrentWeight_string);
                         newPost.put("Target Weight",TargetWeight_String);
                         newPost.put(("Height"),Height_String);
+                        newPost.put("Sleep",Sleep_String);
 
                         current_User_db.setValue(newPost);
                         ArrayList<String> arrayList = new ArrayList<>();
@@ -162,10 +182,11 @@ public class UserInfo extends Fragment {
                         }
 
                         getDate();
-                        if (arrayList.contains("BMR")){
+                        if (arrayList.contains("Sleep")){
 
                         }else {
                             float Floatheight = Float.parseFloat(Height_String);
+                            float FloatSleep = Float.parseFloat(Sleep_String);
                             int IntAge = Integer.parseInt(AgeString);
                             int IntWeight = Integer.parseInt(CurrentWeight_string);
 
@@ -176,8 +197,11 @@ public class UserInfo extends Fragment {
                             }else if (GenderString.matches("Female")){
                                 BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
                             }
+
                             int BMRint = (int)BMR;
-                            db.addCaloriesBurned(new Calories_Burned_Object(-1,"BMR",BMRint,todaysDate));
+                            double Sleep = ((double)BMRint /24) * FloatSleep * 0.85;
+                            int SleepInt = (int)Sleep;
+                            db.addCaloriesBurned(new Calories_Burned_Object(-1,"Sleep",SleepInt,todaysDate));
                         }
 
                         FragmentManager fragmentManager = getFragmentManager();
@@ -227,31 +251,37 @@ public class UserInfo extends Fragment {
                 String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
                 String targetweight = String.valueOf(snapshot.child("Target Weight").getValue());
                 String getheight = String.valueOf(snapshot.child("Height").getValue());
+                String getSleep = String.valueOf(snapshot.child("Sleep").getValue());
 
                 if (name.matches("null")){
                     Name.setHint("Name");
                 }else {
-                    Name.setHint(name+"");
+                    Name.setHint("Name: "+name+"");
                 }
                 if (age.matches("null")){
                     Age.setHint("Age");
                 }else {
-                    Age.setHint(age+"");
+                    Age.setHint("Age: "+age);
                 }
                 if (currentweight.matches("null")){
                     CurrentWeight.setHint("Current weight");
                 }else {
-                    CurrentWeight.setHint(currentweight+"");
+                    CurrentWeight.setHint("Current weight: "+currentweight);
                 }
                 if (targetweight.matches("null")){
                     TargetWeight.setHint("Target Weight");
                 }else {
-                    TargetWeight.setHint(targetweight+"");
+                    TargetWeight.setHint("Target Weight: "+targetweight+"");
                 }
                 if (getheight.matches("null")){
                     height.setHint("Height (inches)");
                 }else {
-                    height.setHint(getheight);
+                    height.setHint("Height (inches): "+getheight);
+                }
+                if (getSleep.matches("null")){
+                    sleep.setHint("Sleep duration (hrs)");
+                }else {
+                    sleep.setHint("Sleep duration: "+getSleep);
                 }
             }
 

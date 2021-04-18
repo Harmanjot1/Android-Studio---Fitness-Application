@@ -112,7 +112,6 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
 
 
             pushup_list.addAll(db.getPushups());
-            resetNewDay();
         }
 
         getTodays_Pushups();
@@ -332,17 +331,4 @@ public class Pushup_frag extends Fragment implements SensorEventListener {
         return previousDate;
     }
 
-    public void resetNewDay() {
-        get_Date_Pushups();
-
-        if (previousDate.equals(todaysDate)){
-
-
-        }else {
-            db.delete_pushup();
-            db.addPushUp(new Push_Up(0,PB_pushup,todaysDate));
-
-
-        }
-    }
 }
