@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +19,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
@@ -52,7 +45,7 @@ public class Register extends AppCompatActivity {
         rPassword = findViewById(R.id.register_password);
         rReEnterPassword = findViewById(R.id.register_reEnterPassword);
         rRegister = findViewById(R.id.login_register);
-        rLogin = findViewById(R.id.login_textview);
+        rLogin = findViewById(R.id.forgotpassword_btnreset);
 
         rauth = FirebaseAuth.getInstance();
 

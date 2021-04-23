@@ -2,6 +2,9 @@ package com.example.app1.StepCounter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,7 +24,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.app1.Dashboard_frag;
 import com.example.app1.Database.DataBaseHelper;
+import com.example.app1.LoadingScreens.Challenge_loadingscreen;
+import com.example.app1.Push_Up.Pushup_frag;
 import com.example.app1.R;
 
 import java.text.SimpleDateFormat;
@@ -206,6 +212,7 @@ public class StepDetectorActivity extends AppCompatActivity {
                     db.addSteps(new Steps(-1,counted,todaysDate));
 
                 }
+                finish();
             }
         });
 

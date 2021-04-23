@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class SetGoal extends Fragment {
+public class    SetGoal extends Fragment {
     EditText Calories_Burned,Calories_Eaten,Distance,Push_ups;
     Spinner gender;
     Button cancel,save;

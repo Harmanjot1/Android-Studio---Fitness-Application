@@ -52,14 +52,9 @@ public class Register extends AppCompatActivity {
         rPassword = findViewById(R.id.register_password);
         rReEnterPassword = findViewById(R.id.register_reEnterPassword);
         rRegister = findViewById(R.id.login_register);
-        rLogin = findViewById(R.id.login_textview);
+        rLogin = findViewById(R.id.login_btn);
 
         rauth = FirebaseAuth.getInstance();
-
-        if (rauth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), Main.class));
-            finish();
-        }
 
 
         rRegister.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +79,7 @@ public class Register extends AppCompatActivity {
                     return;
                 }
                 if (!email.matches(emailPattern)) {
-                    Toast.makeText(Register.this, "Email Pattern invalid", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Email Pattern invalid (example12@gmail.com)", Toast.LENGTH_LONG).show();
                 }
                 if (password.length() < 6) {
                     rPassword.setError("Password must be longer than 6 characters");
@@ -101,35 +96,47 @@ public class Register extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(Register.this, "User registered", Toast.LENGTH_SHORT).show();
+                            rauth.getCurrentUser().sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        Toast.makeText(Register.this, "User registered, Please check email for verification.", Toast.LENGTH_LONG).show();
 
-                            String UserId = rauth.getCurrentUser().getUid();
-                            DatabaseReference targets = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
-
-
-                            int calories_burned = 0;
-                            int calories_eaten = 0;
-                            float distance = 0;
-                            int pushups = 0;
-
-                            Map targetMap = new HashMap<>();
-                            Map challengesmap = new HashMap<>();
-
-                            targetMap.put("Goal: Calories Burned",calories_burned);
-                            targetMap.put("Goal: Calories Eaten",calories_eaten);
-                            targetMap.put("Goal: Running Distance",distance);
-                            targetMap.put("Goal: Push-up's", pushups);
-
-                            targetMap.put("Challenge: Push-up's",pushups);
-                            targetMap.put("Challenge: Calories Eaten",calories_eaten);
-                            targetMap.put("Challenge: Running Distance",distance);
-                            targetMap.put("Challenge: Calories Burned",calories_burned);
+                                        String UserId = rauth.getCurrentUser().getUid();
+                                        DatabaseReference targets = FirebaseDatabase.getInstance().getReference().child("User").child(UserId).child("Targets");
 
 
-                            targets.setValue(targetMap);
+                                        int calories_burned = 0;
+                                        int calories_eaten = 0;
+                                        float distance = 0;
+                                        int pushups = 0;
+
+                                        Map targetMap = new HashMap<>();
+                                        Map challengesmap = new HashMap<>();
+
+                                        targetMap.put("Goal: Calories Burned",calories_burned);
+                                        targetMap.put("Goal: Calories Eaten",calories_eaten);
+                                        targetMap.put("Goal: Running Distance",distance);
+                                        targetMap.put("Goal: Push-up's", pushups);
+
+                                        targetMap.put("Challenge: Push-up's",pushups);
+                                        targetMap.put("Challenge: Calories Eaten",calories_eaten);
+                                        targetMap.put("Challenge: Running Distance",distance);
+                                        targetMap.put("Challenge: Calories Burned",calories_burned);
+
+
+                                        targets.setValue(targetMap);
+                                    }else {
+                                        Toast.makeText(Register.this, "Unable to register " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+
                             startActivity(new Intent(getApplicationContext(),Login.class));
                         } else {
-                            Toast.makeText(Register.this, "Unable to register" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(Register.this, "Unable to register " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
                         }
                     }

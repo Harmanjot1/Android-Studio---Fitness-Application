@@ -154,9 +154,15 @@ public class Profile_frag extends Fragment {
                 String getSleep = String.valueOf(snapshot.child("Sleep").getValue());
                 String getActive = String.valueOf(snapshot.child("Active").getValue());
 
-                name_txt.setText("Name: "+name);
-                age_txt.setText("Age: "+age);
-                currentweight_txt.setText("Current Weight :"+currentweight);
+                if (name.matches("null")){
+                    name_txt.setText("Name");
+                    age_txt.setText("Age");
+                    currentweight_txt.setText("Current Weight");
+                }else {
+                    name_txt.setText("Name: "+name);
+                    age_txt.setText("Age: "+age);
+                    currentweight_txt.setText("Current Weight :"+currentweight);
+                }
 
                 if (gender == "Male"){
                     UserImage.setBackgroundResource(R.drawable.male_icon);
@@ -164,27 +170,40 @@ public class Profile_frag extends Fragment {
                 if (gender == "Female"){
                     UserImage.setBackgroundResource(R.drawable.female_icon);
                 }
-                float Floatheight = Float.parseFloat(getheight);
-                int IntAge = Integer.parseInt(age);
-                int IntWeight = Integer.parseInt(currentweight);
 
+                float Floatheight =0;
+                int IntAge  =0;
+                int IntWeight  =0;
                 double BMR = 0;
 
-                if (gender.matches("Male")){
-                    BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
-                }else if (gender.matches("Female")){
-                    BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
-                }
-                int BMRint = (int)BMR;
-                int currentWeight = Integer.parseInt(currentweight);
-                int targetWeight = Integer.parseInt(targetweight);
+                int BMRint = 0;
+                int currentWeight = 0;
+                int targetWeight = 0;
                 int weight_difference = 0;
-                if (currentWeight<targetWeight){
-                    weight_difference=targetWeight - currentWeight;
-                }else if(currentWeight>targetWeight){
-                    weight_difference = currentWeight-targetWeight;
-                }else if (currentWeight == targetWeight){
-                    weight_difference = 0;
+
+                if (getheight != "null" && age != "null" && currentweight != "null"){
+                    Floatheight = Float.parseFloat(getheight);
+                    IntAge = Integer.parseInt(age);
+                    IntWeight = Integer.parseInt(currentweight);
+
+
+                    if (gender.matches("Male")){
+                        BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
+                    }else if (gender.matches("Female")){
+                        BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                    }
+                    BMRint = (int)BMR;
+                    currentWeight = Integer.parseInt(currentweight);
+                    targetWeight = Integer.parseInt(targetweight);
+
+
+                    if (currentWeight<targetWeight){
+                        weight_difference=targetWeight - currentWeight;
+                    }else if(currentWeight>targetWeight){
+                        weight_difference = currentWeight-targetWeight;
+                    }else if (currentWeight == targetWeight){
+                        weight_difference = 0;
+                    }
                 }
 
                 double BMTdouble = (double) BMRint;

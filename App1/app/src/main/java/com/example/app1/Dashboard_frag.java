@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.app1.Calories_Burned.Calories_Burned;
 import com.example.app1.Calories_Burned.Calories_Burned_Object;
@@ -33,6 +34,7 @@ import com.example.app1.LoadingScreens.Calories_Burned_loadingscreen;
 import com.example.app1.LoadingScreens.Calories_EatenLoadingScreen;
 import com.example.app1.LoadingScreens.Challenge_loadingscreen;
 import com.example.app1.LoadingScreens.Pushup_loadingscreen;
+import com.example.app1.Login_Logout.Register;
 import com.example.app1.Push_Up.Push_Up;
 import com.example.app1.Push_Up.Pushup_frag;
 import com.example.app1.StepCounter.StepDetectorActivity;
@@ -95,7 +97,7 @@ public class Dashboard_frag extends Fragment {
     DataBaseHelper db;
     private int todays_pushup,PB_pushup,total_calories_Burned,steps_counted;
     private String todaysDate= "",previousDate = "";
-    private String caloriesBurnedPreviousDate = "",caloriesEatenPreviousDate = "";
+    private String caloriesBurnedPreviousDate = "",caloriesEatenPreviousDate = "",stepsDate = " ";
     private SimpleDateFormat dateFormat;
 
     // for Overall progress Bar
@@ -186,6 +188,7 @@ public class Dashboard_frag extends Fragment {
         getTotalcal();
         getCaloriesBurned();
         getSteps();
+        getStepsDate();
 
         getDate();
         // Resetting database if date is changed ---------------------------------------------------
@@ -193,7 +196,7 @@ public class Dashboard_frag extends Fragment {
         System.out.println("pushup Date"+previousDate);
         System.out.println("calories burned Date"+caloriesBurnedPreviousDate);
         System.out.println("calories eaten Date"+caloriesEatenPreviousDate);
-
+        System.out.println("Steps date"+stepsDate);
         resetNewDay();
 
         // Button click listeners ------------------------------------------------------------------
@@ -472,6 +475,10 @@ public class Dashboard_frag extends Fragment {
 
                 }
 
+                if (target_calories_burned==0){
+                    Toast.makeText(getContext(), "Please setup your goals and targets in Profile.", Toast.LENGTH_SHORT).show();
+                }
+
                 pushups_txt.setText(todays_pushup+"/"+target_pushups);
                 calories_burned_txt.setText(total_calories_Burned+"/"+getCalories_burned);
                 calories_eaten_txt.setText(totalcal +"/"+getCalories_eaten);
@@ -596,9 +603,18 @@ public class Dashboard_frag extends Fragment {
                 caloriesEatenPreviousDate = food.getDate();
             }
         }
-        return caloriesBurnedPreviousDate;
+        return caloriesEatenPreviousDate;
     }
 
+    public String getStepsDate(){
+        if (db.getSteps() != null){
+            for (int i = 0; i< steps_list.size();i++){
+                steps = steps_list.get(i);
+                stepsDate = steps.getDate();
+            }
+        }
+        return stepsDate;
+    }
     public int getPB_pushups(){
         for (int i =0; i<pushup_list.size();i++){
             push_up = pushup_list.get(i);
@@ -637,6 +653,12 @@ public class Dashboard_frag extends Fragment {
             db.deleteAllFood();
             eaten = true;
         }
+        if (stepsDate.equals(todaysDate) || stepsDate.isEmpty()){
+
+        }else{
+            db.deleteAllSteps();
+
+        }
 
         if (caloriesBurnedPreviousDate.equals(todaysDate) || caloriesBurnedPreviousDate.isEmpty()){
         }else {
@@ -651,25 +673,35 @@ public class Dashboard_frag extends Fragment {
                     String age = String.valueOf(snapshot.child("Age").getValue());
                     String currentweight = String.valueOf(snapshot.child("Current Weight").getValue());
                     String gender = String.valueOf(snapshot.child("Gender").getValue());
+                    String getActive = String.valueOf(snapshot.child("Active").getValue());
 
-                    float Floatheight = Float.parseFloat(getheight);
-                    float FloatSleep = Float.parseFloat(getSleep);
-                    int IntAge = Integer.parseInt(age);
-                    int IntWeight = Integer.parseInt(currentweight);
+                    if (getheight !="null" && getSleep !="null"){
+                        float Floatheight = Float.parseFloat(getheight);
+                        float FloatSleep = Float.parseFloat(getSleep);
+                        int IntAge = Integer.parseInt(age);
+                        int IntWeight = Integer.parseInt(currentweight);
 
-                    double BMR = 0;
+                        double BMR = 0;
 
-                    if (gender.matches("Male")){
-                        BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
-                    }else if (gender.matches("Female")){
-                        BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                        if (gender.matches("Male")){
+                            BMR = 66.47 +(6.24 * IntWeight)+(12.71*Floatheight) - (6.78*IntAge);
+                        }else if (gender.matches("Female")){
+                            BMR = 665.1 +(4.34 * IntWeight)+(4.7*Floatheight) - (4.68*IntAge);
+                        }
+                        int BMRint = (int)BMR;
+                        double Sleep = ((double)BMRint /24) * FloatSleep * 0.85;
+                        int SleepInt = (int)Sleep;
+
+                        db.deleteAllCalories_Burned();
+                        db.addCaloriesBurned(new Calories_Burned_Object(-1,"Sleep",SleepInt,todaysDate));
+                        reloadFragment();
+                    }else {
+                        db.deleteAllCalories_Burned();
+                        reloadFragment();
+
                     }
-                    int BMRint = (int)BMR;
-                    double Sleep = ((double)BMRint /24) * FloatSleep * 0.85;
-                    int SleepInt = (int)Sleep;
 
-                    db.deleteAllCalories_Burned();
-                    db.addCaloriesBurned(new Calories_Burned_Object(-1,"Sleep",SleepInt,todaysDate));
+
 
                 }
 
@@ -679,9 +711,17 @@ public class Dashboard_frag extends Fragment {
                 }
             });
         }
+        if (eaten ==true|| burned ==true|| pushup ==true){
+            reloadFragment();
+        }
 
 
 
+    }
+    public void reloadFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        Dashboard_frag calories_burned = new Dashboard_frag();
+        fragmentManager.beginTransaction().replace(R.id.fragment,calories_burned).addToBackStack(null).commit();
     }
 
 
